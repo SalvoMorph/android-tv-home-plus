@@ -3,7 +3,10 @@
   "fill_dock": false,
   "hidden_apps": ["org.droidtv.playtv"],
   "live_tv_package": "org.droidtv.playtv",
+  "icon_only_buttons": true,
+  "icon_only_inputs": true,
   "reduced_motion": true,
   "cinematic_home": true,
   "sky_intensity": 30
 }
+

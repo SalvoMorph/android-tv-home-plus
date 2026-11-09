@@ -15,10 +15,18 @@ with about 1–2 GB of RAM.
 
 - **Weather next to the clock**, from [Open-Meteo](https://open-meteo.com/) (free, no account, no API key):
   an icon drawn in code (no images), the temperature, the place, the day's maximum and minimum.
-- **More settings on the TV** (Launcher settings, with the remote): the weather city (37 Italian cities,
-  or Off), cinematic home on or off, and the dynamic sky (off, light, strong). Choices made on the TV
+- **More settings on the TV** (Launcher settings, with the remote): the weather **on or off** (on by default),
+  the weather city (37 Italian cities), cinematic home on or off, and the dynamic sky (off, light, strong). Choices made on the TV
   win over a theme until you pick *Follow theme*.
-- **Any place** through a theme: `weather_city` takes a city name, `"lat,lon"` or `"lat,lon,Name"`.
+- **Any place** through a theme: `weather_city` takes a city name, `"lat,lon"` or `"lat,lon,Name"`; `weather_enabled: false` hides the weather.
+- **A short motivational line under the clock**, off until you turn it on (Launcher settings, or `"quotes"` in a
+  theme): `local` shows one from a list built into the launcher (about 70 Italian and 40 English, in the TV's
+  language where there is one, no network), `online` shows ZenQuotes' English quote of the day with its credit
+  (one request a day; the list shows while it loads or if the answer does not suit).
+- **A small round Launcher settings icon** beside the TV Settings button (`launcher_settings_icon`, on by default),
+  so the settings are one press away without a long press.
+- **An add-on for the markets**, [`addons/stocks`](addons/stocks/): indices, commodities, currencies and stocks on four
+  full-screen pages, with a card on Home. A separate app, so the launcher does not depend on it.
 - A ready theme for the Philips above: [`themes/philips-tpm171e`](themes/philips-tpm171e/config.json).
 - Italian strings for the new rows.
 
@@ -30,14 +38,17 @@ Everything is built so that it costs almost nothing:
   after a failure), on one short-lived thread, with the last answer cached. No service, no alarm, no timer
   in the background.
 - The icon is a few shapes on a canvas, redrawn only when the weather changes.
-- With `weather_city` empty, which is the default, **the launcher makes no network request at all**.
+- The weather is on by default, but **nothing is requested until a city is chosen**: with no city, a short hint
+  under the clock says where to pick one. With the weather switched off, the launcher makes no network request at all.
 - On the Philips above the launcher uses about 100 MB of RAM with weather, cinematic home and sky on.
 
 ### Privacy and permissions
 
-The upstream launcher had no `INTERNET` permission. This fork adds it **only for the weather**. The only
-thing sent is the coordinates of the chosen place to `api.open-meteo.com` (and, for a city name that is not
-one of the presets, the name to `geocoding-api.open-meteo.com`, once). The weather needs no account, no
+The upstream launcher had no `INTERNET` permission. This fork adds it **only for the weather and, if you pick
+Online, the daily quote**. For the weather the only thing sent is the coordinates of the chosen place to
+`api.open-meteo.com` (and, for a city name that is not one of the presets, the name to
+`geocoding-api.open-meteo.com`, once); for the quote, a plain request to `zenquotes.io` once a day, with nothing
+about you or the TV. With the weather off and the quotes off or on List, the launcher makes no request at all. The weather needs no account, no
 identifier and no location permission: the place is the one you choose, not one read from the TV. (The
 upstream launcher separately asks for location access, only to be able to show the Wi-Fi network name.)
 
@@ -84,7 +95,7 @@ which one to use: pick the stock one with *Always*.
 ## Credits and licence
 
 MIT, see [LICENSE](LICENSE). The launcher is by **Gathin** ([cleanyourtv](https://github.com/Gathin23/cleanyourtv),
-commit `66b7214`); the weather, the extra settings and this packaging are additions on top of that code. The
+launcher 3.4, commit `294d3d5`); the weather, the extra settings and this packaging are additions on top of that code. The
 Outfit font keeps its own licence (`launcher/FONT-LICENSE-OFL.txt`). Weather data by
 [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0; free for non-commercial use).
 
@@ -105,9 +116,16 @@ tornare al launcher originale.
 
 - **Meteo** accanto all'orologio, da Open-Meteo (gratuito, senza account né chiave): icona, temperatura,
   località, massima e minima.
-- **Impostazioni sulla TV**: città del meteo, home cinematografica, cielo dinamico.
+- **Impostazioni sulla TV**: meteo acceso o spento (acceso di default), città del meteo, home cinematografica,
+  cielo dinamico, frasi motivazionali (spente di default: elenco italiano incluso, oppure una frase inglese al
+  giorno da ZenQuotes).
+- **Icona rotonda** per le impostazioni del launcher accanto a quella delle impostazioni TV.
+- **Add-on Mercati** ([`addons/stocks`](addons/stocks/)): indici, materie prime, cambi e azioni (USA e italiane) su
+  quattro pagine a schermo intero, con una card nella home. I dati arrivano da Yahoo Finance, possono essere in
+  ritardo e non sono consulenza finanziaria.
 - Funziona solo mentre la home è visibile: al massimo una richiesta ogni 30 minuti, nessun servizio in
-  background. Con `weather_city` vuoto non fa nessuna richiesta di rete.
+  background. Il meteo è acceso di default, ma **non fa nessuna richiesta finché non scegli una città** (sotto
+  l'orologio compare un breve suggerimento). Con il meteo spento non fa nessuna richiesta di rete.
 - Rispetto all'originale aggiunge il permesso `INTERNET`, usato solo per il meteo; viene inviata soltanto la
   posizione (coordinate) della città scelta.
 

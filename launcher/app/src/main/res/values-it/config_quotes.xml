@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Quotes under the clock when Quotes are set to List (see Quotes.java). One line each, up to about 100 characters. -->
+<resources>
+    <string-array name="quotes_local">
+        <item>Un passo alla volta, ma oggi fai quel passo.</item>
+        <item>Ogni grande cosa è cominciata con un piccolo «ci provo».</item>
+        <item>Sorridi: è gratis e ti dona.</item>
+        <item>Oggi è un buon giorno per fare qualcosa di cui domani sarai fiero.</item>
+        <item>Il caffè aiuta, ma l\'entusiasmo fa di più.</item>
+        <item>Non devi essere perfetto, devi solo cominciare.</item>
+        <item>Anche le giornate storte finiscono con la buonanotte.</item>
+        <item>Respira, ridi, riparti.</item>
+        <item>Sei più forte di quanto pensi e più simpatico di quanto credi.</item>
+        <item>Il telecomando è tuo: scegli tu come va la giornata.</item>
+        <item>Piano piano si arriva lontano.</item>
+        <item>Dopo la pioggia il bucato asciuga: ottimismo!</item>
+        <item>Oggi tocca a te. Domani toccherà ancora a te.</item>
+        <item>Fai una cosa difficile oggi: il resto sembrerà più leggero.</item>
+        <item>La fortuna aiuta gli audaci, e anche chi si sveglia in tempo.</item>
+        <item>Una buona risata vale più di mille sveglie.</item>
+        <item>Se la strada non va, cambia strada. Il navigatore lo fa di continuo.</item>
+        <item>Ogni giorno è una pagina bianca: scrivici qualcosa di bello.</item>
+        <item>Sii gentile: costa poco e rende tantissimo.</item>
+        <item>Anche una tartaruga arriva, se non smette di camminare.</item>
+        <item>Hai già superato il 100% delle tue giornate difficili.</item>
+        <item>Pensa positivo: almeno il Wi-Fi funziona.</item>
+        <item>Il segreto? Cominciare prima di sentirsi pronti.</item>
+        <item>Un po\' di coraggio, un po\' di pazienza e tanta pizza.</item>
+        <item>Non è mai troppo tardi per ricominciare.</item>
+        <item>Le cose belle arrivano a chi sa aspettare, ma anche a chi si muove.</item>
+        <item>Oggi niente scuse: solo buone idee e un buon caffè.</item>
+        <item>Sbagliando si impara. Quindi stai imparando un sacco.</item>
+        <item>Regalati cinque minuti di calma: te li meriti.</item>
+        <item>Chi ben comincia è a metà dell\'opera.</item>
+        <item>Il tuo futuro ti ringrazierà per quello che fai oggi.</item>
+        <item>Fai pace con il lunedì: tanto non se ne va.</item>
+        <item>La vita è bella, soprattutto con il divano e un buon film.</item>
+        <item>Un grande sogno comincia con una piccola sveglia.</item>
+        <item>Meglio un tentativo imperfetto che un\'idea perfetta in un cassetto.</item>
+        <item>Ricordati di bere acqua e di essere gentile con te stesso.</item>
+        <item>Ogni tramonto promette un\'alba nuova.</item>
+        <item>Sii il motivo per cui qualcuno sorride oggi.</item>
+        <item>Con calma e con testa si fa tutto, perfino il lunedì.</item>
+        <item>Quando la strada sale, vuol dire che stai arrivando in alto.</item>
+        <item>Il successo? Un po\' di talento, tanta costanza, pochissime scuse.</item>
+        <item>Hai il diritto di riposare, non di mollare.</item>
+        <item>Oggi sarai fantastico. Fidati, l\'ho letto in TV.</item>
+        <item>Prima o poi la pizza arriva. Anche i sogni.</item>
+        <item>Le piccole abitudini cambiano le grandi giornate.</item>
+        <item>Chi dorme non piglia pesci, ma chi sogna ne vede tanti.</item>
+        <item>Un caffè, un sorriso e si parte.</item>
+        <item>Anche il viaggio più lungo comincia con un clic.</item>
+        <item>Sei esattamente dove devi essere per iniziare.</item>
+        <item>Trova qualcosa di bello nella giornata di oggi: c\'è sempre.</item>
+        <item>Se cadi sette volte, ti rialzi otto. Con calma, però.</item>
+        <item>Fai in modo che i giorni contino.</item>
+        <item>Il bicchiere è mezzo pieno, e in frigo ce n\'è ancora.</item>
+        <item>La gentilezza è contagiosa: diffondila.</item>
+        <item>Oggi scegli la strada più bella, non solo la più corta.</item>
+        <item>A volte basta una canzone per cambiare la giornata.</item>
+        <item>Il meglio deve ancora venire. Anche la prossima puntata, probabilmente.</item>
+        <item>Metti il cuore nelle piccole cose e vedrai che diventano grandi.</item>
+        <item>Le difficoltà passano, le risate restano.</item>
+        <item>Domani non esiste ancora: oggi, invece, è tutto tuo.</item>
+        <item>Oggi basta un piccolo passo: anche le pantofole contano.</item>
+        <item>Allunga il passo e allarga il sorriso.</item>
+        <item>Ogni lunedì è un nuovo inizio, con più caffè.</item>
+        <item>Quello che semini oggi, domani ti fa festa.</item>
+        <item>Con un pizzico di fantasia anche il martedì diventa speciale.</item>
+        <item>Non sei in ritardo: sei in cammino.</item>
+        <item>Pazienza e buonumore: il motore di ogni buona giornata.</item>
+        <item>Il tuo meglio di oggi basta e avanza.</item>
+        <item>Una buona giornata comincia da una buona scelta. Anche piccola.</item>
+    </string-array>
+</resources>

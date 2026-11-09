@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Markets</string>
+    <string name="page_indices">Indices</string>
+    <string name="page_markets">Commodities &amp; FX</string>
+    <string name="page_us">US stocks</string>
+    <string name="page_italy">Italian stocks</string>
+    <string name="updating">Updating…</string>
+    <string name="updated_at">Updated at %1$s</string>
+    <string name="no_data">No data yet</string>
+    <string name="some_failed">some prices could not be read</string>
+    <string name="footer">Left and Right change page, OK refreshes. Data from Yahoo Finance, possibly delayed. Not financial advice.</string>
+</resources>

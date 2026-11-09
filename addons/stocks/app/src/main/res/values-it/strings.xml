@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mercati</string>
+    <string name="page_indices">Indici</string>
+    <string name="page_markets">Materie prime e cambi</string>
+    <string name="page_us">Azioni USA</string>
+    <string name="page_italy">Azioni italiane</string>
+    <string name="updating">Aggiornamento…</string>
+    <string name="updated_at">Aggiornato alle %1$s</string>
+    <string name="no_data">Nessun dato</string>
+    <string name="some_failed">alcuni prezzi non sono leggibili</string>
+    <string name="footer">Sinistra e destra cambiano pagina, OK aggiorna. Dati Yahoo Finance, possibili ritardi. Non è consulenza finanziaria.</string>
+</resources>

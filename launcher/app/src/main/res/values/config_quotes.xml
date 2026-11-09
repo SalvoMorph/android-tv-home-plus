@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Quotes under the clock when Quotes are set to List (see Quotes.java). One line each, up to about 100 characters. -->
+<resources>
+    <string-array name="quotes_local">
+        <item>One step at a time, but take that step today.</item>
+        <item>Every big thing started with a small \"let me try\".</item>
+        <item>Smile: it\'s free and it suits you.</item>
+        <item>Today is a good day to do something you\'ll be proud of tomorrow.</item>
+        <item>Coffee helps, but enthusiasm does more.</item>
+        <item>You don\'t have to be perfect, you just have to begin.</item>
+        <item>Even the rough days end with a good night.</item>
+        <item>Breathe, laugh, start again.</item>
+        <item>You are stronger than you think and funnier than you believe.</item>
+        <item>The remote is yours: you choose how the day goes.</item>
+        <item>Slowly but surely, you get far.</item>
+        <item>After the rain the laundry dries: stay optimistic!</item>
+        <item>Do one hard thing today and the rest will feel lighter.</item>
+        <item>A good laugh beats a thousand alarm clocks.</item>
+        <item>If the road is closed, take another. Your GPS does it all the time.</item>
+        <item>Every day is a blank page: write something good.</item>
+        <item>Be kind: it costs little and pays a lot.</item>
+        <item>Even a turtle gets there if it keeps walking.</item>
+        <item>You have survived 100% of your difficult days so far.</item>
+        <item>Think positive: at least the Wi-Fi works.</item>
+        <item>The secret? Start before you feel ready.</item>
+        <item>A little courage, a little patience and a lot of pizza.</item>
+        <item>It is never too late to start over.</item>
+        <item>No excuses today: just good ideas and a good coffee.</item>
+        <item>Mistakes mean you are learning a lot.</item>
+        <item>Give yourself five calm minutes: you deserve them.</item>
+        <item>Your future self will thank you for what you do today.</item>
+        <item>Make peace with Monday: it is not going anywhere.</item>
+        <item>Life is good, especially with a couch and a nice film.</item>
+        <item>A big dream starts with a small alarm clock.</item>
+        <item>A messy try beats a perfect idea in a drawer.</item>
+        <item>Drink some water and be kind to yourself.</item>
+        <item>Every sunset promises a new sunrise.</item>
+        <item>Be the reason someone smiles today.</item>
+        <item>When the road goes uphill, you are getting somewhere high.</item>
+        <item>Success? A bit of talent, lots of persistence, very few excuses.</item>
+        <item>You may rest. You may not quit.</item>
+        <item>Little habits change big days.</item>
+        <item>Even the longest journey starts with a click.</item>
+        <item>You are exactly where you need to be to begin.</item>
+        <item>Find one nice thing in today. There always is.</item>
+        <item>You are not late: you are on your way.</item>
+    </string-array>
+</resources>
