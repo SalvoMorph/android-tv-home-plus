@@ -1,0 +1,9 @@
+{
+  "dock_apps": ["com.netflix.ninja", "com.disney.disneyplus", "com.amazon.amazonvideo.livingroom"],
+  "fill_dock": false,
+  "hidden_apps": ["org.droidtv.playtv"],
+  "live_tv_package": "org.droidtv.playtv",
+  "reduced_motion": true,
+  "cinematic_home": true,
+  "sky_intensity": 30
+}
