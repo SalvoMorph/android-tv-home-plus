@@ -39,11 +39,16 @@ with about 1–2 GB of RAM.
 
 ### Screenshots
 
-Taken on the Philips 55POS9002/12 (the weather place is replaced by "YOUR CITY" in the first two pictures).
+Taken on the Philips 55POS9002/12 (the weather place is replaced by "YOUR CITY"). Left: the theme as Home opens; right: after Down on the remote raises the dock.
 
-| Lite (the default theme) | Mountain | Mountain: Down brings the dock up |
+| Theme | Home | Dock raised |
 |---|---|---|
-| ![Lite: clock, weather, the focused app's name and the dock](docs/screenshots/lite-theme.jpg) | ![Mountain: a glass clock behind the mountain, the date, weather and a quote](docs/screenshots/lock-screen.jpg) | ![Mountain with the dock of icon cards raised](docs/screenshots/lock-screen-dock.jpg) |
+| **Lite** (default) | ![Lite: clock, weather, the focused app's name and the dock](docs/screenshots/lite-theme.jpg) | the dock is always visible |
+| **Mountain** | ![Mountain](docs/screenshots/theme-mountain.jpg) | ![Mountain with the dock raised](docs/screenshots/theme-mountain_dock.jpg) |
+| **Glacier** | ![Glacier](docs/screenshots/theme-glacier.jpg) | ![Glacier with the dock raised](docs/screenshots/theme-glacier_dock.jpg) |
+| **Alpenglow** | ![Alpenglow](docs/screenshots/theme-alpenglow.jpg) | ![Alpenglow with the dock raised](docs/screenshots/theme-alpenglow_dock.jpg) |
+
+The pictures behind Glacier and Alpenglow are not in this repository (see `themes/clock-look/CREDITS.md`), so a build from source offers Lite and Mountain only; the screenshots show what the other two look like with their pictures.
 
 The Markets add-on:
 
