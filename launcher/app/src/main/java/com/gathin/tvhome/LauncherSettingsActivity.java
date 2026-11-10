@@ -9,17 +9,31 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.TextView;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.IntConsumer;
+import java.util.function.IntFunction;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
-/** Remote-friendly settings owned by the launcher; system settings stay one row away. */
+/**
+ * Remote-friendly settings owned by the launcher: categories on the left, the chosen category's settings on the
+ * right. Right opens a category, Left/Right change a value in place, Left (or Back) returns to the categories.
+ * System settings stay one row away.
+ */
 public final class LauncherSettingsActivity extends Activity {
     @Override
     protected void attachBaseContext(android.content.Context base) {
@@ -27,129 +41,141 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     static final String EXTRA_REORDER = "com.gathin.tvhome.extra.REORDER_FROM_SETTINGS";
-    private SharedPreferences choices;
-    private final TextView[] columnChoices = new TextView[4];
-    private final TextView[] rowChoices = new TextView[4];
     private static final int[] DOCK_OPACITIES = {100, 70, 50, 30};
-    private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
     private static final String[] CLOCK_FORMATS = {"system", "12", "24"};
-    private final TextView[] clockChoices = new TextView[CLOCK_FORMATS.length];
-    private TextView wallpaperChoice;
-    private TextView animationsChoice;
-    private TextView advancedChoice;
-    private TextView followThemeChoice;
-    private TextView openOnStartChoice;
+    private static final int PICK = 0, TOGGLE = 1, STEP = 2, ACTION = 3;
+    private static final int SKY_LIGHT = 35;
+    private static final int SKY_STRONG = 70;
+
+    private SharedPreferences choices;
     private int columns;
     private int rowsBelowDock;
     private int dockOpacity;
     private String clockFormat;
     private boolean animations;
     private boolean advancedEffects;
-    private TextView weatherShowRow;
-    private TextView weatherRow;
-    private TextView cinematicRow;
-    private TextView themeRow;
     private boolean clockLook;
     private String mountainScene = "mountain";
-    private TextView skyRow;
-    private TextView quotesRow;
     private String weatherCity;
     private boolean weatherOn;
     private boolean cinematic;
     private int sky;
     private String quotesMode;
 
+    /** One line of the right-hand pane. */
+    private final class Row {
+        final int kind;
+        final String title;
+        Supplier<String> value = () -> "";
+        Runnable click;
+        BooleanSupplier enabled = () -> true;
+        BooleanSupplier on;
+        int count;
+        IntSupplier index;
+        IntConsumer set;
+        IntFunction<String> label;
+        int hint;
+        LinearLayout view;
+        TextView valueView;
+
+        Row(int kind, String title) {
+            this.kind = kind;
+            this.title = title;
+        }
+    }
+
+    private final List<String> categoryTitles = new ArrayList<>();
+    private final List<List<Row>> categoryRows = new ArrayList<>();
+    private final List<TextView> categoryViews = new ArrayList<>();
+    private LinearLayout rowsView;
+    private TextView paneTitle;
+    private TextView hintView;
+    private int current = -1;
+    private int forwardKey = KeyEvent.KEYCODE_DPAD_RIGHT;
+    private int backKey = KeyEvent.KEYCODE_DPAD_LEFT;
+    private Config config;
+
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_launcher_settings);
         choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
-        Config config = Config.load(this);
-        View reorderChoice = findViewById(R.id.reorderChoice);
-        reorderChoice.setVisibility(config.launcherSettingsButton ? View.VISIBLE : View.GONE);
-        reorderChoice.setOnClickListener(v -> {
-            setResult(RESULT_OK, new Intent().putExtra(EXTRA_REORDER, true));
-            finish();
-        });
-        columns = config.columns;
-        rowsBelowDock = config.rowsBelowDock;
-        dockOpacity = config.dockOpacity;
-        clockFormat = config.clockFormat;
-        animations = config.animations;
-        advancedEffects = config.animations && config.advancedEffects;
-        readLook(config);
-
-        int[] ids = {R.id.columns4, R.id.columns5, R.id.columns6, R.id.columns7};
-        for (int i = 0; i < ids.length; i++) {
-            final int value = i + 4;
-            columnChoices[i] = findViewById(ids[i]);
-            columnChoices[i].setOnClickListener(v -> {
-                if (columns == value) return;
-                columns = value;
-                choices.edit().putInt("columns", value).apply();
-                changed();
-                refresh();
-            });
-        }
-        int[] rowIds = {R.id.rows0, R.id.rows1, R.id.rows2, R.id.rows3};
-        for (int i = 0; i < rowIds.length; i++) {
-            final int value = i;
-            rowChoices[i] = findViewById(rowIds[i]);
-            rowChoices[i].setOnClickListener(v -> {
-                if (rowsBelowDock == value) return;
-                rowsBelowDock = value;
-                choices.edit().putInt(Config.ROWS_BELOW_DOCK_KEY, value).apply();
-                changed();
-                refresh();
-            });
-        }
-        int[] dockIds = {R.id.dock100, R.id.dock70, R.id.dock50, R.id.dock30};
-        for (int i = 0; i < dockIds.length; i++) {
-            final int value = DOCK_OPACITIES[i];
-            dockChoices[i] = findViewById(dockIds[i]);
-            dockChoices[i].setOnClickListener(v -> {
-                if (dockOpacity == value) return;
-                dockOpacity = value;
-                choices.edit().putInt(Config.DOCK_OPACITY_KEY, value).apply();
-                changed();
-                refresh();
-            });
-        }
-        int[] clockIds = {R.id.clockSystem, R.id.clock12, R.id.clock24};
-        for (int i = 0; i < clockIds.length; i++) {
-            final String value = CLOCK_FORMATS[i];
-            clockChoices[i] = findViewById(clockIds[i]);
-            clockChoices[i].setOnClickListener(v -> {
-                if (value.equals(clockFormat)) return;
-                clockFormat = value;
-                choices.edit().putString(Config.CLOCK_FORMAT_KEY, value).apply();
-                changed();
-                refresh();
-            });
-        }
-        // Mirror text alignment without globally opting the launcher into RTL. Numeric rows
-        // still need explicit ordering in Android's no-supportsRtl compatibility mode.
-        if (getResources().getBoolean(R.bool.rtl_menu_bar))
+        config = Config.load(this);
+        readValues(config);
+        if (getResources().getBoolean(R.bool.rtl_menu_bar)) {
             findViewById(android.R.id.content).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        if (getResources().getBoolean(R.bool.rtl_app_grid)) {
-            reverseRow(columnChoices);
-            reverseRow(rowChoices);
-            reverseRow(dockChoices);
-            reverseRow(clockChoices);
+            forwardKey = KeyEvent.KEYCODE_DPAD_LEFT;
+            backKey = KeyEvent.KEYCODE_DPAD_RIGHT;
         }
-        wallpaperChoice = findViewById(R.id.wallpaperChoice);
-        wallpaperChoice.setOnClickListener(v -> showWallpaperPicker());
-        animationsChoice = findViewById(R.id.animationsChoice);
-        animationsChoice.setOnClickListener(v -> {
+        rowsView = findViewById(R.id.settingsRows);
+        paneTitle = findViewById(R.id.settingsPaneTitle);
+        hintView = findViewById(R.id.settingsHint);
+        buildCategories();
+        LinearLayout list = findViewById(R.id.settingsCategories);
+        for (int i = 0; i < categoryTitles.size(); i++) {
+            final int index = i;
+            TextView item = new TextView(this);
+            item.setText(categoryTitles.get(i));
+            item.setTextColor(0xFFFFFFFF);
+            item.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+            item.setGravity(Gravity.CENTER_VERTICAL);
+            item.setPadding(dp(22), 0, dp(22), 0);
+            item.setBackgroundResource(R.drawable.settings_category_bg);
+            item.setFocusable(true);
+            item.setClickable(true);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(60));
+            lp.bottomMargin = dp(6);
+            list.addView(item, lp);
+            item.setOnFocusChangeListener((v, focused) -> {
+                if (focused) {
+                    showCategory(index);
+                    hintView.setVisibility(View.INVISIBLE);
+                }
+            });
+            item.setOnClickListener(v -> focusRows());
+            item.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN || keyCode != forwardKey) return false;
+                focusRows();
+                return true;
+            });
+            categoryViews.add(item);
+        }
+        showCategory(0);
+        categoryViews.get(0).requestFocus();
+    }
+
+    private void buildCategories() {
+        // Look
+        List<Row> look = new ArrayList<>();
+        look.add(pick(titleOf(R.string.theme_state), () -> getString(clockLook
+                ? MountainScenes.find(mountainScene).nameRes : R.string.theme_lite), this::showThemePicker, R.string.theme_hint));
+        look.add(pick(titleOf(R.string.wallpaper_state), () -> {
+            String chosen = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
+            return "none".equals(chosen) ? getString(R.string.wallpaper_none)
+                    : chosen != null ? chosen : getString(R.string.wallpaper_theme_default);
+        }, this::showWallpaperPicker, 0));
+        look.add(toggle(titleOf(R.string.cinematic_state), () -> cinematic, () -> {
+            cinematic = !cinematic;
+            choices.edit().putBoolean(Config.CINEMATIC_CHOICE_KEY, cinematic).apply();
+        }, 0));
+        look.add(step(titleOf(R.string.sky_state), 3,
+                () -> sky == 0 ? 0 : sky <= SKY_LIGHT ? 1 : 2,
+                i -> {
+                    sky = i == 0 ? 0 : i == 1 ? SKY_LIGHT : SKY_STRONG;
+                    choices.edit().putInt(Config.SKY_CHOICE_KEY, sky).apply();
+                },
+                i -> getString(i == 0 ? R.string.off : i == 1 ? R.string.sky_low : R.string.sky_high), 0));
+        look.add(toggle(titleOf(R.string.animations_state), () -> animations, () -> {
             animations = !animations;
             if (!animations) advancedEffects = false;
             choices.edit().putBoolean("animations", animations)
                     .putBoolean("advanced_effects", advancedEffects).apply();
-            changed();
-            refresh();
-        });
-        advancedChoice = findViewById(R.id.advancedChoice);
-        advancedChoice.setOnClickListener(v -> {
+        }, 0));
+        Row advanced = toggle(titleOf(R.string.advanced_effects_state), () -> advancedEffects, () -> { },
+                R.string.advanced_effects_warning);
+        advanced.enabled = () -> animations;
+        advanced.click = () -> {
             if (advancedEffects) {
                 setAdvanced(false);
             } else {
@@ -160,91 +186,297 @@ public final class LauncherSettingsActivity extends Activity {
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
             }
-        });
-        openOnStartChoice = findViewById(R.id.openOnStartChoice);
-        if (config.openOnStartChoice) {
-            openOnStartChoice.setVisibility(View.VISIBLE);
-            openOnStartChoice.setOnClickListener(v -> showOpenOnStartPicker());
+        };
+        look.add(advanced);
+        look.add(step(getString(R.string.dream_name), CLOCK_FORMATS.length,
+                () -> Math.max(0, Arrays.asList(CLOCK_FORMATS).indexOf(clockFormat)),
+                i -> {
+                    clockFormat = CLOCK_FORMATS[i];
+                    choices.edit().putString(Config.CLOCK_FORMAT_KEY, clockFormat).apply();
+                },
+                i -> getString(i == 0 ? R.string.clock_format_system
+                        : i == 1 ? R.string.clock_format_12 : R.string.clock_format_24), 0));
+        addCategory(getString(R.string.settings_cat_look), look);
+
+        // Dock
+        List<Row> dock = new ArrayList<>();
+        if (config.launcherSettingsButton) {
+            dock.add(action(getString(R.string.reorder), () -> {
+                setResult(RESULT_OK, new Intent().putExtra(EXTRA_REORDER, true));
+                finish();
+            }, 0));
         }
-        weatherShowRow = findViewById(R.id.weatherShowChoice);
-        weatherShowRow.setOnClickListener(v -> {
+        dock.add(step(getString(R.string.columns_label), 4,
+                () -> Math.max(0, Math.min(columns - 4, 3)),
+                i -> {
+                    columns = i + 4;
+                    choices.edit().putInt("columns", columns).apply();
+                }, i -> String.valueOf(i + 4), 0));
+        dock.add(step(getString(R.string.rows_below_dock_label), 4,
+                () -> Math.max(0, Math.min(rowsBelowDock, 3)),
+                i -> {
+                    rowsBelowDock = i;
+                    choices.edit().putInt(Config.ROWS_BELOW_DOCK_KEY, i).apply();
+                }, String::valueOf, 0));
+        dock.add(step(getString(R.string.dock_opacity_label), DOCK_OPACITIES.length,
+                () -> {
+                    int best = 0;
+                    for (int i = 1; i < DOCK_OPACITIES.length; i++) {
+                        if (Math.abs(DOCK_OPACITIES[i] - dockOpacity) < Math.abs(DOCK_OPACITIES[best] - dockOpacity)) best = i;
+                    }
+                    return best;
+                },
+                i -> {
+                    dockOpacity = DOCK_OPACITIES[i];
+                    choices.edit().putInt(Config.DOCK_OPACITY_KEY, dockOpacity).apply();
+                }, i -> DOCK_OPACITIES[i] + "%", 0));
+        addCategory(getString(R.string.settings_cat_dock), dock);
+
+        // Weather and quotes
+        List<Row> weather = new ArrayList<>();
+        weather.add(toggle(titleOf(R.string.weather_show_state), () -> weatherOn, () -> {
             weatherOn = !weatherOn;
             choices.edit().putBoolean(Config.WEATHER_ENABLED_KEY, weatherOn).apply();
+        }, R.string.weather_hint));
+        Row city = pick(titleOf(R.string.weather_city_state),
+                () -> weatherCity.isEmpty() ? getString(R.string.weather_city_unset) : weatherCity,
+                this::showWeatherPicker, R.string.weather_hint);
+        city.enabled = () -> weatherOn;
+        weather.add(city);
+        weather.add(step(titleOf(R.string.quotes_state), 3,
+                () -> Quotes.OFF.equals(quotesMode) ? 0 : Quotes.LOCAL.equals(quotesMode) ? 1 : 2,
+                i -> {
+                    quotesMode = i == 0 ? Quotes.OFF : i == 1 ? Quotes.LOCAL : Quotes.ONLINE;
+                    choices.edit().putString(Config.QUOTES_CHOICE_KEY, quotesMode).apply();
+                },
+                i -> getString(i == 0 ? R.string.off : i == 1 ? R.string.quotes_list : R.string.quotes_online),
+                R.string.quotes_hint));
+        addCategory(getString(R.string.settings_cat_weather), weather);
+
+        // System
+        List<Row> system = new ArrayList<>();
+        if (config.openOnStartChoice) {
+            system.add(pick(titleOf(R.string.open_on_start_state), this::openOnStartLabel,
+                    this::showOpenOnStartPicker, 0));
+        }
+        Row follow = action(getString(R.string.follow_theme), this::followTheme, R.string.follow_theme_hint);
+        follow.enabled = this::hasOnTvChoices;
+        system.add(follow);
+        system.add(action(getString(R.string.home_settings),
+                () -> open(new Intent(this, HomeSettingsActivity.class)), R.string.home_settings_help));
+        system.add(action(getString(R.string.tv_settings),
+                () -> open(SystemSettings.intent(this, Settings.ACTION_SETTINGS)), 0));
+        addCategory(getString(R.string.settings_cat_system), system);
+    }
+
+    private void addCategory(String title, List<Row> rows) {
+        categoryTitles.add(title);
+        categoryRows.add(rows);
+    }
+
+    private Row pick(String title, Supplier<String> value, Runnable open, int hint) {
+        Row row = new Row(PICK, title);
+        row.value = value;
+        row.click = open;
+        row.hint = hint;
+        return row;
+    }
+
+    private Row toggle(String title, BooleanSupplier on, Runnable flip, int hint) {
+        Row row = new Row(TOGGLE, title);
+        row.on = on;
+        row.click = () -> {
+            flip.run();
             changed();
             refresh();
-        });
-        weatherRow = findViewById(R.id.weatherChoice);
-        weatherRow.setOnClickListener(v -> showWeatherPicker());
-        themeRow = findViewById(R.id.themeChoice);
-        themeRow.setOnClickListener(v -> showThemePicker());
-        cinematicRow = findViewById(R.id.cinematicChoice);
-        cinematicRow.setOnClickListener(v -> {
-            cinematic = !cinematic;
-            choices.edit().putBoolean(Config.CINEMATIC_CHOICE_KEY, cinematic).apply();
-            changed();
-            refresh();
-        });
-        skyRow = findViewById(R.id.skyChoice);
-        skyRow.setOnClickListener(v -> {
-            // Off, then a light and a strong backdrop. Both are one gradient, drawn once a minute.
-            sky = sky == 0 ? SKY_LIGHT : sky == SKY_LIGHT ? SKY_STRONG : 0;
-            choices.edit().putInt(Config.SKY_CHOICE_KEY, sky).apply();
-            changed();
-            refresh();
-        });
-        quotesRow = findViewById(R.id.quotesChoice);
-        quotesRow.setOnClickListener(v -> {
-            // Off, then the built-in list, then one online quote a day.
-            quotesMode = Quotes.OFF.equals(quotesMode) ? Quotes.LOCAL
-                    : Quotes.LOCAL.equals(quotesMode) ? Quotes.ONLINE : Quotes.OFF;
-            choices.edit().putString(Config.QUOTES_CHOICE_KEY, quotesMode).apply();
-            changed();
-            refresh();
-        });
-        followThemeChoice = findViewById(R.id.followThemeChoice);        followThemeChoice.setOnClickListener(v -> {
-            if (!hasOnTvChoices()) return;
-            choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
-                    .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(Config.CLOCK_FORMAT_KEY).remove(OpenOnStart.KEY)
-                    .remove(Config.WEATHER_CHOICE_KEY).remove(Config.WEATHER_ENABLED_KEY).remove(Config.CINEMATIC_CHOICE_KEY)
-                    .remove(Config.CLOCK_LOOK_KEY).remove(Config.MOUNTAIN_SCENE_KEY).remove(Config.SKY_CHOICE_KEY).remove(Config.QUOTES_CHOICE_KEY).commit();
-            Config current = Config.load(this);
-            readLook(current);
-            columns = current.columns;
-            rowsBelowDock = current.rowsBelowDock;
-            dockOpacity = current.dockOpacity;
-            clockFormat = current.clockFormat;
-            animations = current.animations;
-            advancedEffects = current.animations && current.advancedEffects;
-            changed();
-            refresh();
-        });
-        findViewById(R.id.defaultHomeChoice).setOnClickListener(v ->
-                open(new Intent(this, HomeSettingsActivity.class)));
-        findViewById(R.id.tvSettingsChoice).setOnClickListener(v ->
-                open(SystemSettings.intent(this, Settings.ACTION_SETTINGS)));
+        };
+        row.hint = hint;
+        return row;
+    }
+
+    private Row action(String title, Runnable go, int hint) {
+        Row row = new Row(ACTION, title);
+        row.click = go;
+        row.hint = hint;
+        return row;
+    }
+
+    private Row step(String title, int count, IntSupplier index, IntConsumer set, IntFunction<String> label, int hint) {
+        Row row = new Row(STEP, title);
+        row.count = count;
+        row.index = index;
+        row.set = set;
+        row.label = label;
+        row.hint = hint;
+        row.click = () -> step(row, 1, true);
+        return row;
+    }
+
+    /** Moves a value one step; false when it is already at that end (and may not wrap). */
+    private boolean step(Row row, int dir, boolean wrap) {
+        int i = row.index.getAsInt() + dir;
+        if (wrap) i = (i + row.count) % row.count;
+        else if (i < 0 || i >= row.count) return false;
+        row.set.accept(i);
+        changed();
         refresh();
-        if (config.launcherSettingsButton) reorderChoice.requestFocus();
-        else columnChoices[Math.max(0, Math.min(columns - 4, 3))].requestFocus();
+        return true;
     }
 
-    private static final int SKY_LIGHT = 35;
-    private static final int SKY_STRONG = 70;
-
-    private void readLook(Config config) {
-        weatherCity = config.weatherCity;
-        weatherOn = config.weatherEnabled;
-        cinematic = config.cinematicHome;
-        clockLook = config.clockLook;
-        mountainScene = config.mountainScene;
-        sky = config.skyIntensity;
-        quotesMode = config.quotesMode;
+    /** A state string such as "Theme: %1$s" without its value: "Theme". */
+    private String titleOf(int stateRes) {
+        String marker = "\u0001";
+        String s = getString(stateRes, marker);
+        int i = s.indexOf(marker);
+        String t = i > 0 ? s.substring(0, i) : s.substring(Math.max(0, i) + 1);
+        return t.replaceAll("^[\\s:\uFF1A]+|[\\s:\uFF1A]+$", "");
     }
 
-    /** The two looks: Lite, the light default, and Lock Screen (config clock_look). */
+    private int dp(float value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
+    }
+
+    private void showCategory(int index) {
+        if (index == current) return;
+        current = index;
+        for (int i = 0; i < categoryViews.size(); i++) categoryViews.get(i).setSelected(i == index);
+        paneTitle.setText(categoryTitles.get(index));
+        rowsView.removeAllViews();
+        for (Row row : categoryRows.get(index)) {
+            if (row.view == null) buildRowView(row);
+            rowsView.addView(row.view);
+        }
+        refresh();
+    }
+
+    private void buildRowView(Row row) {
+        LinearLayout view = new LinearLayout(this);
+        view.setOrientation(LinearLayout.HORIZONTAL);
+        view.setGravity(Gravity.CENTER_VERTICAL);
+        view.setPadding(dp(24), 0, dp(24), 0);
+        view.setBackgroundResource(R.drawable.settings_row_bg);
+        view.setFocusable(true);
+        view.setClickable(true);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(64));
+        lp.bottomMargin = dp(8);
+        view.setLayoutParams(lp);
+        TextView title = new TextView(this);
+        title.setText(row.title);
+        title.setTextColor(0xFFFFFFFF);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        title.setSingleLine(true);
+        title.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        view.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView value = new TextView(this);
+        value.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        value.setSingleLine(true);
+        value.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        value.setMaxWidth(dp(380));
+        value.setGravity(Gravity.END);
+        LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        vp.setMarginStart(dp(24));
+        view.addView(value, vp);
+        row.view = view;
+        row.valueView = value;
+        view.setOnClickListener(v -> row.click.run());
+        view.setOnFocusChangeListener((v, focused) -> {
+            updateValue(row);
+            if (!focused) return;
+            if (row.hint != 0) {
+                hintView.setText(row.hint);
+                hintView.setVisibility(View.VISIBLE);
+            } else {
+                hintView.setVisibility(View.INVISIBLE);
+            }
+        });
+        view.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            boolean forward = keyCode == forwardKey;
+            if (!forward && keyCode != backKey) return false;
+            if (row.kind == STEP && step(row, forward ? 1 : -1, false)) return true;
+            if (!forward) focusCategory();
+            return true;
+        });
+    }
+
+    private void updateValue(Row row) {
+        if (row.valueView == null) return;
+        boolean focused = row.view.isFocused();
+        String text;
+        int color = 0xFFB9E7C7;
+        if (row.kind == TOGGLE) {
+            boolean on = row.on.getAsBoolean();
+            text = getString(on ? R.string.on : R.string.off);
+            if (!on) color = 0xFF9AA7B2;
+        } else if (row.kind == STEP) {
+            int i = row.index.getAsInt();
+            text = (focused && i > 0 ? "\u2039  " : "") + row.label.apply(i)
+                    + (focused && i < row.count - 1 ? "  \u203A" : "");
+        } else if (row.kind == PICK) {
+            text = row.value.get() + "  \u203A";
+        } else {
+            text = "\u203A";
+            color = 0xFF9AA7B2;
+        }
+        row.valueView.setText(text);
+        row.valueView.setTextColor(color);
+    }
+
+    private void focusRows() {
+        for (int i = 0; i < rowsView.getChildCount(); i++) {
+            View child = rowsView.getChildAt(i);
+            if (child.isEnabled() && child.requestFocus()) return;
+        }
+    }
+
+    private void focusCategory() {
+        if (current >= 0) categoryViews.get(current).requestFocus();
+    }
+
+    @Override
+    public void onBackPressed() {
+        View focus = getCurrentFocus();
+        if (focus != null && focus.getParent() == rowsView) focusCategory();
+        else super.onBackPressed();
+    }
+
+    private void followTheme() {
+        if (!hasOnTvChoices()) return;
+        choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
+                .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
+                .remove(Config.DOCK_OPACITY_KEY).remove(Config.CLOCK_FORMAT_KEY).remove(OpenOnStart.KEY)
+                .remove(Config.WEATHER_CHOICE_KEY).remove(Config.WEATHER_ENABLED_KEY).remove(Config.CINEMATIC_CHOICE_KEY)
+                .remove(Config.CLOCK_LOOK_KEY).remove(Config.MOUNTAIN_SCENE_KEY).remove(Config.SKY_CHOICE_KEY).remove(Config.QUOTES_CHOICE_KEY).commit();
+        readValues(Config.load(this));
+        changed();
+        refresh();
+    }
+
+    private void readValues(Config c) {
+        columns = c.columns;
+        rowsBelowDock = c.rowsBelowDock;
+        dockOpacity = c.dockOpacity;
+        clockFormat = c.clockFormat;
+        animations = c.animations;
+        advancedEffects = c.animations && c.advancedEffects;
+        readLook(c);
+    }
+
+    private void readLook(Config c) {
+        weatherCity = c.weatherCity;
+        weatherOn = c.weatherEnabled;
+        cinematic = c.cinematicHome;
+        clockLook = c.clockLook;
+        mountainScene = c.mountainScene;
+        sky = c.skyIntensity;
+        quotesMode = c.quotesMode;
+    }
+
+    /** Lite, the light default, then each Mountain picture this build has (config clock_look). */
     private void showThemePicker() {
-        // Lite, then each Mountain picture this build has (the repository ships only the first).
-        java.util.List<MountainScenes.Scene> scenes = new java.util.ArrayList<>();
+        List<MountainScenes.Scene> scenes = new ArrayList<>();
         for (MountainScenes.Scene scene : MountainScenes.ALL) if (MountainScenes.available(this, scene)) scenes.add(scene);
         String[] labels = new String[scenes.size() + 1];
         labels[0] = getString(R.string.theme_lite);
@@ -300,15 +532,9 @@ public final class LauncherSettingsActivity extends Activity {
                 .show();
     }
 
-    private void reverseRow(TextView[] views) {
-        LinearLayout row = (LinearLayout) views[0].getParent();
-        row.removeAllViews();
-        for (int i = views.length - 1; i >= 0; i--) row.addView(views[i]);
-    }
-
     private void showWallpaperPicker() {
         File dir = Config.dir(this);
-        List<File> images = new java.util.ArrayList<>(WallpaperRotation.images(
+        List<File> images = new ArrayList<>(WallpaperRotation.images(
                 dir == null ? null : new File(dir, "wallpapers")));
         // A theme with a single wallpaper.jpg offers that picture too (Config maps the choice back to it).
         File single = dir == null ? null : new File(dir, Config.WALLPAPER_NAME);
@@ -316,9 +542,9 @@ public final class LauncherSettingsActivity extends Activity {
         String[] labels = new String[images.size() + 1];
         for (int i = 0; i < images.size(); i++) labels[i] = images.get(i).getName();
         labels[images.size()] = getString(R.string.wallpaper_none);
-        String current = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
-        int checked = "none".equals(current) ? images.size()
-                : indexOf(images, current);
+        String chosen = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
+        int checked = "none".equals(chosen) ? images.size()
+                : indexOf(images, chosen);
         new AlertDialog.Builder(this)
                 .setTitle(R.string.wallpaper_label)
                 .setSingleChoiceItems(labels, checked, (dialog, which) -> {
@@ -357,11 +583,11 @@ public final class LauncherSettingsActivity extends Activity {
         Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
         String[] labels = new String[apps.size() + 1];
         labels[0] = getString(R.string.off);
-        String current = choices.getString(OpenOnStart.KEY, "");
+        String chosen = choices.getString(OpenOnStart.KEY, "");
         int checked = 0;
         for (int i = 0; i < apps.size(); i++) {
             labels[i + 1] = apps.get(i)[0];
-            if (apps.get(i)[1].equals(current)) checked = i + 1;
+            if (apps.get(i)[1].equals(chosen)) checked = i + 1;
         }
         new AlertDialog.Builder(this)
                 .setTitle(R.string.open_on_start_label)
@@ -415,48 +641,16 @@ public final class LauncherSettingsActivity extends Activity {
         refresh();
     }
 
+    /** Redraws the values (and the enabled state) of the visible rows. */
     private void refresh() {
-        for (int i = 0; i < columnChoices.length; i++) {
-            columnChoices[i].setSelected(columns == i + 4);
+        if (current < 0) return;
+        for (Row row : categoryRows.get(current)) {
+            if (row.view == null) continue;
+            boolean enabled = row.enabled.getAsBoolean();
+            row.view.setEnabled(enabled);
+            row.view.setAlpha(enabled ? 1f : 0.45f);
+            updateValue(row);
         }
-        for (int i = 0; i < rowChoices.length; i++) {
-            rowChoices[i].setSelected(rowsBelowDock == i);
-        }
-        for (int i = 0; i < dockChoices.length; i++) {
-            dockChoices[i].setSelected(dockOpacity == DOCK_OPACITIES[i]);
-        }
-        for (int i = 0; i < clockChoices.length; i++) {
-            clockChoices[i].setSelected(CLOCK_FORMATS[i].equals(clockFormat));
-        }
-        animationsChoice.setText(getString(R.string.animations_state,
-                getString(animations ? R.string.on : R.string.off)));
-        advancedChoice.setText(getString(R.string.advanced_effects_state,
-                getString(advancedEffects ? R.string.on : R.string.off)));
-        advancedChoice.setEnabled(animations);
-        advancedChoice.setAlpha(animations ? 1f : 0.5f);
-        String wallpaperCurrent = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
-        wallpaperChoice.setText(getString(R.string.wallpaper_state,
-                "none".equals(wallpaperCurrent) ? getString(R.string.wallpaper_none)
-                        : wallpaperCurrent != null ? wallpaperCurrent
-                        : getString(R.string.wallpaper_theme_default)));
-        openOnStartChoice.setText(getString(R.string.open_on_start_state, openOnStartLabel()));
-        weatherShowRow.setText(getString(R.string.weather_show_state,
-                getString(weatherOn ? R.string.on : R.string.off)));
-        weatherRow.setText(getString(R.string.weather_city_state,
-                weatherCity.isEmpty() ? getString(R.string.weather_city_unset) : weatherCity));
-        weatherRow.setEnabled(weatherOn);
-        weatherRow.setAlpha(weatherOn ? 1f : 0.5f);
-        themeRow.setText(getString(R.string.theme_state,
-                getString(clockLook ? MountainScenes.find(mountainScene).nameRes : R.string.theme_lite)));
-        cinematicRow.setText(getString(R.string.cinematic_state,
-                getString(cinematic ? R.string.on : R.string.off)));
-        skyRow.setText(getString(R.string.sky_state,
-                getString(sky == 0 ? R.string.off : sky <= SKY_LIGHT ? R.string.sky_low : R.string.sky_high)));
-        quotesRow.setText(getString(R.string.quotes_state,
-                Quotes.OFF.equals(quotesMode) ? getString(R.string.off)
-                        : Quotes.LOCAL.equals(quotesMode) ? getString(R.string.quotes_list)
-                        : getString(R.string.quotes_online)));
-        followThemeChoice.setSelected(!hasOnTvChoices());
     }
 
     private boolean hasOnTvChoices() {

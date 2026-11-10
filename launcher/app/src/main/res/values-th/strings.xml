@@ -81,4 +81,8 @@
     <string name="theme_mountain">Mountain</string>
     <string name="theme_glacier">Glacier</string>
     <string name="theme_alpenglow">Alpenglow</string>
+    <string name="settings_cat_look">รูปลักษณ์</string>
+    <string name="settings_cat_dock">ด็อก</string>
+    <string name="settings_cat_weather">สภาพอากาศและคำคม</string>
+    <string name="settings_cat_system">ระบบ</string>
 </resources>

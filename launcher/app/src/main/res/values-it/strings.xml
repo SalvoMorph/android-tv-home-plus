@@ -183,4 +183,8 @@
     <string name="quotes_list">Elenco</string>
     <string name="quotes_online">Online</string>
     <string name="quotes_hint">Spente, un elenco incluso nel launcher (nessuna rete) oppure una frase inglese al giorno da ZenQuotes (zenquotes.io).</string>
+    <string name="settings_cat_look">Aspetto</string>
+    <string name="settings_cat_dock">Dock</string>
+    <string name="settings_cat_weather">Meteo e frasi</string>
+    <string name="settings_cat_system">Sistema</string>
 </resources>

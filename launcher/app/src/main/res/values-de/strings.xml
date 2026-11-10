@@ -84,4 +84,8 @@
     <string name="theme_mountain">Mountain</string>
     <string name="theme_glacier">Glacier</string>
     <string name="theme_alpenglow">Alpenglow</string>
+    <string name="settings_cat_look">Darstellung</string>
+    <string name="settings_cat_dock">Dock</string>
+    <string name="settings_cat_weather">Wetter und Zitate</string>
+    <string name="settings_cat_system">System</string>
 </resources>

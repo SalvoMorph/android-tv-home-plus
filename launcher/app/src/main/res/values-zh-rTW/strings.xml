@@ -107,4 +107,8 @@
     <string name="theme_mountain">Mountain</string>
     <string name="theme_glacier">Glacier</string>
     <string name="theme_alpenglow">Alpenglow</string>
+    <string name="settings_cat_look">外觀</string>
+    <string name="settings_cat_dock">程式塢</string>
+    <string name="settings_cat_weather">天氣與名言</string>
+    <string name="settings_cat_system">系統</string>
 </resources>

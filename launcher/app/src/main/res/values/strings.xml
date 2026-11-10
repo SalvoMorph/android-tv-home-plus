@@ -192,4 +192,8 @@
     <string name="quotes_list">List</string>
     <string name="quotes_online">Online</string>
     <string name="quotes_hint">Off, a list built into the launcher (no network), or one English quote a day from ZenQuotes (zenquotes.io).</string>
+    <string name="settings_cat_look">Appearance</string>
+    <string name="settings_cat_dock">Dock</string>
+    <string name="settings_cat_weather">Weather and quotes</string>
+    <string name="settings_cat_system">System</string>
 </resources>

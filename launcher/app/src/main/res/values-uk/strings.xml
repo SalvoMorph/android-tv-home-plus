@@ -164,4 +164,8 @@
     <string name="theme_mountain">Mountain</string>
     <string name="theme_glacier">Glacier</string>
     <string name="theme_alpenglow">Alpenglow</string>
+    <string name="settings_cat_look">Вигляд</string>
+    <string name="settings_cat_dock">Док</string>
+    <string name="settings_cat_weather">Погода і цитати</string>
+    <string name="settings_cat_system">Система</string>
 </resources>

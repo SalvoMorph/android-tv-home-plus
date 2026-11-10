@@ -162,4 +162,8 @@
     <string name="theme_mountain">Mountain</string>
     <string name="theme_glacier">Glacier</string>
     <string name="theme_alpenglow">Alpenglow</string>
+    <string name="settings_cat_look">Aparência</string>
+    <string name="settings_cat_dock">Dock</string>
+    <string name="settings_cat_weather">Clima e frases</string>
+    <string name="settings_cat_system">Sistema</string>
 </resources>

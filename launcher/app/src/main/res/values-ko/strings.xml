@@ -161,4 +161,8 @@
     <string name="theme_mountain">Mountain</string>
     <string name="theme_glacier">Glacier</string>
     <string name="theme_alpenglow">Alpenglow</string>
+    <string name="settings_cat_look">모양</string>
+    <string name="settings_cat_dock">독</string>
+    <string name="settings_cat_weather">날씨와 명언</string>
+    <string name="settings_cat_system">시스템</string>
 </resources>

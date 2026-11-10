@@ -162,4 +162,8 @@
     <string name="theme_mountain">Mountain</string>
     <string name="theme_glacier">Glacier</string>
     <string name="theme_alpenglow">Alpenglow</string>
+    <string name="settings_cat_look">מראה</string>
+    <string name="settings_cat_dock">מזח</string>
+    <string name="settings_cat_weather">מזג אוויר ואמרות</string>
+    <string name="settings_cat_system">מערכת</string>
 </resources>

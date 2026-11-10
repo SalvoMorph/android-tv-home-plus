@@ -136,4 +136,8 @@
     <string name="theme_mountain">Mountain</string>
     <string name="theme_glacier">Glacier</string>
     <string name="theme_alpenglow">Alpenglow</string>
+    <string name="settings_cat_look">Giao diện</string>
+    <string name="settings_cat_dock">Dock</string>
+    <string name="settings_cat_weather">Thời tiết và trích dẫn</string>
+    <string name="settings_cat_system">Hệ thống</string>
 </resources>
