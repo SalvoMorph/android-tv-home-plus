@@ -109,11 +109,37 @@ public class LockScreenView extends View {
         return false;
     }
 
+    private MountainScenes.Scene scene = MountainScenes.MOUNTAIN;
+
+    /** Chooses the picture (before the first draw). A scene whose picture is not in this build falls back to Mountain. */
+    void setScene(MountainScenes.Scene chosen) {
+        if (chosen == scene) return;
+        scene = chosen;
+        invalidatePicture();
+        invalidate();
+    }
+
+    private void invalidatePicture() {
+        if (photo != null) photo.recycle();
+        photo = null;
+        if (front != null) front.recycle();
+        front = null;
+        blur = null;
+        blurShader = null;
+        builtW = 0;
+        frontW = 0;
+    }
+
     private void loadPhoto() {
         if (photo != null) return;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        photo = BitmapFactory.decodeResource(getResources(), R.drawable.scenic, options);
+        int id = getResources().getIdentifier(scene.drawable, "drawable", getContext().getPackageName());
+        if (id == 0) {
+            scene = MountainScenes.MOUNTAIN;
+            id = R.drawable.scenic;
+        }
+        photo = BitmapFactory.decodeResource(getResources(), id, options);
     }
 
     /** A tiny blurred copy of the picture for LiquidGlass and the clock, or null if the picture cannot be decoded. */
@@ -243,17 +269,21 @@ public class LockScreenView extends View {
         matrix.setScale(CLOCK_SQUEEZE, 1f);
         clock.transform(matrix);
         clock.computeBounds(clockBounds, true);
-        matrix.setTranslate(w / 2f - clockBounds.centerX(), h * CLOCK_TOP - clockBounds.top);
+        matrix.setTranslate(w / 2f - clockBounds.centerX(), h * scene.clockTop - clockBounds.top);
         clock.transform(matrix);
         clock.computeBounds(clockBounds, true);
 
         float density = getResources().getDisplayMetrics().density;
+        // A pale picture gets a navy glass and a stronger white rim, or white digits would vanish into the sky.
+        int[] tintColors = scene.lightSky ? new int[]{0x8C2F4F85, 0x662C4A7E, 0x522A4677}
+                : new int[]{0x8CFFFFFF, 0x4DFFFFFF, 0x2EFFFFFF};
+        int[] rimColors = scene.lightSky ? new int[]{0xFFFFFFFF, 0xCCFFFFFF, 0x99FFFFFF, 0xFFFFFFFF}
+                : new int[]{0xF2FFFFFF, 0x59FFFFFF, 0x40FFFFFF, 0xB3FFFFFF};
         glassTint.setShader(new LinearGradient(0, clockBounds.top, 0, clockBounds.bottom,
-                new int[]{0x8CFFFFFF, 0x4DFFFFFF, 0x2EFFFFFF}, new float[]{0f, 0.5f, 1f}, Shader.TileMode.CLAMP));
-        glassRim.setStrokeWidth(Math.max(2f, 2.2f * density));
+                tintColors, new float[]{0f, 0.5f, 1f}, Shader.TileMode.CLAMP));
+        glassRim.setStrokeWidth(Math.max(2f, (scene.lightSky ? 3f : 2.2f) * density));
         glassRim.setShader(new LinearGradient(clockBounds.left, clockBounds.top, clockBounds.right, clockBounds.bottom,
-                new int[]{0xF2FFFFFF, 0x59FFFFFF, 0x40FFFFFF, 0xB3FFFFFF}, new float[]{0f, 0.4f, 0.7f, 1f},
-                Shader.TileMode.CLAMP));
+                rimColors, new float[]{0f, 0.4f, 0.7f, 1f}, Shader.TileMode.CLAMP));
         Bitmap small = blur();
         if (small != null) {
             blurShader = new BitmapShader(small, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
@@ -275,7 +305,8 @@ public class LockScreenView extends View {
         frontW = w;
         frontH = h;
         if (photo == null) return;
-        int[] skyline = getResources().getIntArray(R.array.scenic_skyline);
+        int skylineId = getResources().getIdentifier(scene.skyline, "array", getContext().getPackageName());
+        int[] skyline = skylineId == 0 ? new int[0] : getResources().getIntArray(skylineId);
         if (skyline.length < 2) return;
         frontLeft = Math.round(w * FRONT_L);
         frontTop = Math.round(h * FRONT_T);
@@ -332,7 +363,8 @@ public class LockScreenView extends View {
         dest.set(0, 0, w, h);
         canvas.drawBitmap(photo, null, dest, photoPaint);
         // Darker at the top, where the date and the clock sit.
-        shade.setShader(new LinearGradient(0, 0, 0, h * 0.40f, 0x66101030, 0x00101030, Shader.TileMode.CLAMP));
+        shade.setShader(new LinearGradient(0, 0, 0, h * 0.40f, scene.lightSky ? 0x14101030 : 0x66101030, 0x00101030,
+                Shader.TileMode.CLAMP));
         canvas.drawRect(0, 0, w, h * 0.40f, shade);
 
         // The clock: the picture's blurred copy through the digits, a white tint, then the rim.

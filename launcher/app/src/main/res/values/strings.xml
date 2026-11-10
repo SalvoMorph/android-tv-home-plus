@@ -174,7 +174,16 @@
     <string name="weather_home_hint">Weather: choose a city in Launcher settings</string>
     <string name="weather_hint">Turn the weather off to hide it and stop all network use. Pick a city from the list; any other place: set weather_city in a theme.</string>
     <string name="weather_city_unset">Not set</string>
-    <string name="clock_look_state">Big clock look: %1$s</string>
+    <string name="theme_state">Theme: %1$s</string>
+    <string name="theme_title">Choose a theme</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Games</string>
+    <string name="dock_group_other">Apps</string>
+    <string name="theme_hint">Lite is the light default. Mountain draws a photograph and a glass clock: on the Philips it used about 15 MB more memory and started about 0.15 s slower. Your TV may differ.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
     <string name="cinematic_state">Cinematic home: %1$s</string>
     <string name="sky_state">Dynamic sky: %1$s</string>
     <string name="sky_low">Light</string>

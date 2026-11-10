@@ -565,11 +565,14 @@
          "launcher_settings_icon": false. -->
     <bool name="launcher_settings_icon">true</bool>
 
-    <!-- The "big clock" look: a huge clock over a drawn dusk landscape and one low row of small icon cards, with the
-         date and weather on one line above the clock. Switch it on in Launcher settings or with "clock_look": true
-         in a theme; it overrides the dock and effect settings it needs (single_row, dock_title, columns,
-         cinematic_home...). -->
+    <!-- The Mountain theme, a lock screen on the TV: a photograph, a huge glass clock partly behind its mountains, the
+         weather and a quote at the bottom, and a dock that comes up with Down. Choose it in Launcher settings (Theme)
+         or with "clock_look": true in a theme; it overrides the dock and effect settings it needs (single_row,
+         dock_title, columns, cinematic_home...). -->
     <bool name="clock_look">false</bool>
+    <!-- Which picture Mountain sits on: "mountain" (the default), or "glacier" or "alpenglow" in a build that has those
+         pictures. A theme can set "mountain_scene". -->
+    <string name="mountain_scene" translatable="false">mountain</string>
 
     <!-- A short motivational line under the clock. "off" (the default), "local" (a list built into the launcher, in the
          TV's language where there is one, no network) or "online" (one English quote a day from ZenQuotes, with its

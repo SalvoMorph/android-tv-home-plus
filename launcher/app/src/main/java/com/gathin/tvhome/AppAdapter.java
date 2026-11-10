@@ -80,6 +80,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int ambient;
         /** uniform_tiles card fill, top and bottom colour; null until sampled from the icon. */
         int[] backdrop;
+        /** The Mountain theme's group (AppKinds): streaming, games or the rest. Only set while groupByKind is on. */
+        int group = AppKinds.OTHER;
 
         Entry(String label, ComponentName component, Drawable banner, Drawable icon) {
             this(APP, label, component, banner, icon, null, 0);
@@ -117,6 +119,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /** The big-clock look (clock_look) uses square tiles with iOS-style corners instead of 16:9 banners. Set in onCreate. */
     static boolean squareTiles;
+    /** The Mountain theme (clock_look): the dock is split into streaming, games and the rest. Set in onCreate. */
+    static boolean groupByKind;
 
     static int tileHeightPx(int tileWidthPx) {
         if (squareTiles) return tileWidthPx;
@@ -314,7 +318,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (card != null) {
                 fresh.add(new Entry(Entry.CARD, label, component, banner, icon, card.caption, card.accent));
             } else {
-                fresh.add(new Entry(label, component, banner, icon));
+                Entry entry = new Entry(label, component, banner, icon);
+                if (groupByKind) entry.group = AppKinds.kindOf(ri.activityInfo.applicationInfo);
+                fresh.add(entry);
             }
         }
         Collections.sort(fresh, (a, b) -> {
@@ -332,6 +338,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (ca != cb) return ca ? -1 : 1;
             return a.label.compareToIgnoreCase(b.label);
         });
+        // The Mountain theme's separate docks: streaming, then games, then the rest. The sort is stable, so inside a group
+        // the owner's order, the favourites and the alphabet above still decide.
+        if (groupByKind) Collections.sort(fresh, (a, b) -> Integer.compare(a.group, b.group));
         // Retain the optional Default-home tile until dependent tile-ordering work is merged.
         if (showHomeSettings
                 && pm.resolveActivity(new Intent(Settings.ACTION_HOME_SETTINGS), 0) != null) {
@@ -341,7 +350,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         docked = 0;
         while (docked < fresh.size() && isDocked(fresh.get(docked))) docked++;
-        emptySlots = dockRow && !reordering ? DockSlots.empty(docked, dockSize, fresh.size(), fillDock) : 0;
+        // Grouped docks run on without empty slots: the groups, not a row of free places, are what separates the apps.
+        emptySlots = dockRow && !reordering && !groupByKind ? DockSlots.empty(docked, dockSize, fresh.size(), fillDock) : 0;
         for (int i = 0; i < emptySlots; i++) {
             fresh.add(docked + i, new Entry(Entry.EMPTY, "", new ComponentName(ctx, "empty-dock-slot-" + i),
                     null, null, null, 0));
@@ -574,6 +584,20 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     int appCount() { return items.size(); }
+
+    /** The Mountain theme's group (AppKinds) of the tile at this position, or -1 when there is none. */
+    int groupAt(int position) {
+        return position >= 0 && position < items.size() ? items.get(position).group : -1;
+    }
+
+    /** The heading of a group's dock. */
+    String groupName(int group) {
+        switch (group) {
+            case AppKinds.STREAMING: return ctx.getString(R.string.dock_group_streaming);
+            case AppKinds.GAMES: return ctx.getString(R.string.dock_group_games);
+            default: return ctx.getString(R.string.dock_group_other);
+        }
+    }
 
     boolean isLibraryAt(int position) { return showLibrary && position == items.size(); }
 

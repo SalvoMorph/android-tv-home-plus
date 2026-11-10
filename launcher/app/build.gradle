@@ -21,7 +21,10 @@ android {
         release {
             // R8 strips and optimises the code (AndroidX included): smaller APK, faster start on a slow TV CPU.
             minifyEnabled true
-            shrinkResources true
+            // Not shrinkResources: the Mountain theme looks its pictures and skylines up by name (MountainScenes), which the
+            // resource shrinker cannot see; it left the pictures but emptied the skyline lists, so the clock stayed in
+            // front of the mountains. The resources are a few hundred KB.
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // Sideloaded over ADB, never published: sign with the debug key so it installs over a debug build.
             signingConfig signingConfigs.debug

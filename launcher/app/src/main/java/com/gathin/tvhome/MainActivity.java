@@ -602,6 +602,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         weatherEnabled = weatherBlock != null && cfg.weatherEnabled;
         clockLook = cfg.clockLook && weatherBlock != null;
         AppAdapter.squareTiles = clockLook;
+        AppAdapter.groupByKind = clockLook;
         if (clockLook) setUpClockLook(cfg);
         raceCalendar = cfg.raceCalendar;
         racePanel = findViewById(R.id.racePanel);
@@ -2462,8 +2463,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         LockScreenView lock = findViewById(R.id.scenic);
         lock.setVisibility(View.VISIBLE);
         // Liquid glass takes its colours from the picture behind it, which stays put.
+        MountainScenes.Scene scene = MountainScenes.available(this, MountainScenes.find(cfg.mountainScene))
+                ? MountainScenes.find(cfg.mountainScene) : MountainScenes.MOUNTAIN;
+        lock.setScene(scene);
         Bitmap blur = lock.blur();
-        if (blur != null) lookGlass = new LiquidGlass(blur, density);
+        if (blur != null) lookGlass = new LiquidGlass(blur, density, scene.lightSky);
         int heightPx = getResources().getDisplayMetrics().heightPixels;
         int widthPx = getResources().getDisplayMetrics().widthPixels;
 
@@ -2485,10 +2489,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         greeting.setLetterSpacing(0.01f);
         greeting.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f);
         greeting.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        greeting.setShadowLayer(8 * density, 0, 2 * density, 0x66000000);
+        // On a pale sky the date is dark navy, as is the name of a focused button above the round buttons.
+        if (!scene.lightSky) greeting.setShadowLayer(8 * density, 0, 2 * density, 0x66000000);
+        else {
+            TextView pillName = findViewById(R.id.pillHint);
+            if (pillName != null) pillName.setTextColor(0xFF1B2D4F);
+        }
         greeting.setGravity(Gravity.CENTER_HORIZONTAL);
         greeting.setPadding(0, Math.round(heightPx * 0.10f), 0, 0);
-        greetingColor = 0xF2FFFFFF;
+        greetingColor = scene.lightSky ? 0xFF16264A : 0xF2FFFFFF;
         greeting.setTextColor(greetingColor);
         greeting.setText(lookLine());
 
@@ -2540,6 +2549,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockWrapper = (View) dock.getParent();
         dockWrapper.setVisibility(View.INVISIBLE);
         dockWrapper.setAlpha(0f);
+        // The focus glass of the first tile would otherwise stay on screen, a bright square, with the dock away.
+        glass.setVisibility(View.INVISIBLE);
         dockShown = false;
     }
 
@@ -2560,6 +2571,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockShown = true;
         dockWrapper.animate().cancel();
         dockWrapper.setVisibility(View.VISIBLE);
+        glass.setVisibility(View.VISIBLE);
         if (animations && !reducedMotion) {
             dockWrapper.setTranslationY(48 * density);
             dockWrapper.animate().alpha(1f).translationY(0f).setDuration(220).start();
@@ -2581,12 +2593,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (animations && !reducedMotion) {
             dockWrapper.animate().alpha(0f).translationY(48 * density).setDuration(180)
                     .withEndAction(() -> {
-                        if (!dockShown) dockWrapper.setVisibility(View.INVISIBLE);
+                        if (!dockShown) {
+                            dockWrapper.setVisibility(View.INVISIBLE);
+                            glass.setVisibility(View.INVISIBLE);
+                        }
                     }).start();
             lookWidgetsView.animate().alpha(1f).setDuration(220).start();
         } else {
             dockWrapper.setAlpha(0f);
             dockWrapper.setVisibility(View.INVISIBLE);
+            glass.setVisibility(View.INVISIBLE);
             lookWidgetsView.setAlpha(1f);
         }
     }
@@ -2599,6 +2615,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockWrapper.setAlpha(0f);
         dockWrapper.setTranslationY(0f);
         dockWrapper.setVisibility(View.INVISIBLE);
+        glass.setVisibility(View.INVISIBLE);
         lookWidgetsView.setAlpha(1f);
     }
 

@@ -5,3 +5,11 @@ build/
 .idea/
 tools/venv/
 tools/adbkey/
+
+# Extra Mountain pictures kept out of the repository: one is Apple's macOS Sierra wallpaper and the other has no known
+# licence. The Mountain theme offers a picture only when its drawable is in the build (see MountainScenes), so they
+# are optional. Put your own photographs here under these names to add scenes.
+launcher/app/src/main/res/drawable-nodpi/scenic_glacier.jpg
+launcher/app/src/main/res/drawable-nodpi/scenic_alpenglow.jpg
+launcher/app/src/main/res/values/scenic_skyline_glacier.xml
+launcher/app/src/main/res/values/scenic_skyline_alpenglow.xml

@@ -47,6 +47,7 @@ final class Config {
     static final String QUOTES_CHOICE_KEY = "quotes_mode";
     static final String CINEMATIC_CHOICE_KEY = "cinematic_home";
     static final String CLOCK_LOOK_KEY = "clock_look";
+    static final String MOUNTAIN_SCENE_KEY = "mountain_scene";
     static final String SKY_CHOICE_KEY = "sky_intensity";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
     static final String CLOCK_FORMAT_KEY = "clock_format";
@@ -241,6 +242,8 @@ final class Config {
      * drawn dusk landscape with one low row of small icons. It overrides the dock and effect settings it needs.
      */
     final boolean clockLook;
+    /** The picture the Mountain theme sits on, an id of {@link MountainScenes} (config.xml mountain_scene, a theme's mountain_scene, or the on-TV choice). */
+    final String mountainScene;
     /** The motivational line under the clock: "off" (default), "local" (the built-in list) or "online" (see Quotes). */
     final String quotesMode;
     /** The glow in the focused app's colour behind the dock (config.xml, ambient_glow); false keeps the background plain. */
@@ -316,8 +319,9 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
                    int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap,
-                   boolean settingsKeyClearTask, String weatherCity, boolean weatherEnabled, boolean launcherSettingsIcon, String quotesMode, boolean clockLook) {
+                   boolean settingsKeyClearTask, String weatherCity, boolean weatherEnabled, boolean launcherSettingsIcon, String quotesMode, boolean clockLook, String mountainScene) {
         this.clockLook = clockLook;
+        this.mountainScene = mountainScene;
         this.quotesMode = quotesMode;
         this.launcherSettingsIcon = launcherSettingsIcon;
         this.weatherCity = weatherCity;
@@ -537,6 +541,7 @@ final class Config {
         boolean weatherEnabled = res.getBoolean(R.bool.weather_enabled);
         boolean launcherSettingsIcon = res.getBoolean(R.bool.launcher_settings_icon);
         boolean clockLook = res.getBoolean(R.bool.clock_look);
+        String mountainScene = res.getString(R.string.mountain_scene).trim();
         String quotesMode = res.getString(R.string.quotes_mode).trim();
         boolean ambientGlow = res.getBoolean(R.bool.ambient_glow);
         boolean appGlow = res.getBoolean(R.bool.app_glow);
@@ -658,6 +663,7 @@ final class Config {
             weatherEnabled = bool(json, "weather_enabled", weatherEnabled);
             launcherSettingsIcon = bool(json, "launcher_settings_icon", launcherSettingsIcon);
             clockLook = bool(json, "clock_look", clockLook);
+            mountainScene = string(json, "mountain_scene", mountainScene);
             quotesMode = string(json, "quotes", quotesMode);
             ambientGlow = bool(json, "ambient_glow", ambientGlow);
             appGlow = bool(json, "app_glow", appGlow);
@@ -723,6 +729,7 @@ final class Config {
         weatherEnabled = choices.getBoolean(WEATHER_ENABLED_KEY, weatherEnabled);
         quotesMode = Quotes.normalize(choices.getString(QUOTES_CHOICE_KEY, quotesMode));
         clockLook = choices.getBoolean(CLOCK_LOOK_KEY, clockLook);
+        mountainScene = choices.getString(MOUNTAIN_SCENE_KEY, mountainScene);
         if (clockLook) {
             // One low row of small icons, no app name, no glow or sky: the clock and the landscape are the look.
             dockRow = true;
@@ -794,7 +801,7 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap,
-                settingsKeyClearTask, weatherCity, weatherEnabled, launcherSettingsIcon, quotesMode, clockLook);
+                settingsKeyClearTask, weatherCity, weatherEnabled, launcherSettingsIcon, quotesMode, clockLook, mountainScene);
     }
 
     /**
@@ -840,14 +847,14 @@ final class Config {
                     .remove("advanced_effects").remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY)
                     .remove(DOCK_OPACITY_KEY).remove(CLOCK_FORMAT_KEY)
                     .remove(WEATHER_CHOICE_KEY).remove(WEATHER_ENABLED_KEY).remove(CINEMATIC_CHOICE_KEY)
-                    .remove(SKY_CHOICE_KEY).remove(QUOTES_CHOICE_KEY).remove(CLOCK_LOOK_KEY);
+                    .remove(SKY_CHOICE_KEY).remove(QUOTES_CHOICE_KEY).remove(CLOCK_LOOK_KEY).remove(MOUNTAIN_SCENE_KEY);
             editor.putString(THEME_SIGNATURE_KEY, signature).commit();
         } else if (!seen.equals(signature)) {
             choices.edit().remove("columns").remove("animations").remove("advanced_effects")
                     .remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY).remove(DOCK_OPACITY_KEY)
                     .remove(CLOCK_FORMAT_KEY).remove(WEATHER_CHOICE_KEY).remove(WEATHER_ENABLED_KEY)
                     .remove(CINEMATIC_CHOICE_KEY)
-                    .remove(SKY_CHOICE_KEY).remove(QUOTES_CHOICE_KEY).remove(CLOCK_LOOK_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
+                    .remove(SKY_CHOICE_KEY).remove(QUOTES_CHOICE_KEY).remove(CLOCK_LOOK_KEY).remove(MOUNTAIN_SCENE_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
         }
     }
 

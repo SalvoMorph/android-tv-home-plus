@@ -25,11 +25,12 @@ with about 1–2 GB of RAM.
   (one request a day; the list shows while it loads or if the answer does not suit).
 - **A small round Launcher settings icon** beside the TV Settings button (`launcher_settings_icon`, on by default),
   so the settings are one press away without a long press.
-- **A "big clock" look**, switched on in Launcher settings (or with `"clock_look": true` in a theme, see
-  [`themes/clock-look`](themes/clock-look/config.json)): a phone lock screen on the TV, with a photograph (CC BY-SA 4.0, credited in
+- **A second theme, "Mountain"**, chosen in Launcher settings (*Theme*: *Lite*, the default, or *Mountain*) or with `"clock_look": true` in a theme, see
+  [`themes/clock-look`](themes/clock-look/config.json): a phone lock screen on the TV, with a photograph (CC BY-SA 4.0, credited in
   [CREDITS](themes/clock-look/CREDITS.md)), a huge glass clock partly *behind* the mountain, the date above it, the weather and
-  a quote at the bottom and round liquid-glass buttons. Press Down and the dock of square icon cards comes up; Up or Back puts
-  it away. The glass is drawn from a tiny blurred copy of the picture, not blurred live, so it stays cheap on an old TV.
+  a quote at the bottom and round liquid-glass buttons. Press Down and the docks of square icon cards come up, one each for streaming, games and everything else; Up or Back puts
+  them away. The glass is drawn from a tiny blurred copy of the picture, not blurred live. It costs a little more than Lite:
+  see [Performance](#performance-lite-and-mountain).
 - **The name of a focused icon-only top button** appears above the row.
 - **An add-on for the markets**, [`addons/stocks`](addons/stocks/): indices, commodities, currencies and stocks on four
   full-screen pages, with a card on Home. A separate app, so the launcher does not depend on it.
@@ -38,12 +39,15 @@ with about 1–2 GB of RAM.
 
 ### Screenshots
 
-Taken on the Philips 55POS9002/12 (the weather place is replaced by "YOUR CITY" in the first picture).
+Taken on the Philips 55POS9002/12 (the weather place is replaced by "YOUR CITY" in the first two pictures).
 
-| The big-clock look | Down brings the dock up | The Markets add-on |
+| Lite (the default theme) | Mountain | Mountain: Down brings the dock up |
 |---|---|---|
-| ![The big-clock look: a glass clock behind the mountain, the date, weather and a quote](docs/screenshots/lock-screen.jpg) | ![The same screen with the dock of icon cards raised](docs/screenshots/lock-screen-dock.jpg) | ![The Markets add-on: indices with price and change](docs/screenshots/markets-addon.jpg) |
+| ![Lite: clock, weather, the focused app's name and the dock](docs/screenshots/lite-theme.jpg) | ![Mountain: a glass clock behind the mountain, the date, weather and a quote](docs/screenshots/lock-screen.jpg) | ![Mountain with the dock of icon cards raised](docs/screenshots/lock-screen-dock.jpg) |
 
+The Markets add-on:
+
+![The Markets add-on: indices with price and change](docs/screenshots/markets-addon.jpg)
 ### Cost on the TV
 
 Everything is built so that it costs almost nothing:
@@ -56,6 +60,32 @@ Everything is built so that it costs almost nothing:
   under the clock says where to pick one. With the weather switched off, the launcher makes no network request at all.
 - On the Philips above the launcher uses about 100 MB of RAM with weather, cinematic home and sky on.
 
+### Performance: Lite and Mountain
+
+**Mountain costs more than Lite.** It keeps a decoded photograph in memory, draws a glass clock and a copy of the
+mountains over it, and starts a little slower. Measured on the Philips above (Android 8.0, about 1.9 GB of RAM), the same
+build, weather on, quotes off, `reduced_motion` on, one session of measurements, so read them as an indication and not
+as a benchmark:
+
+| | Lite | Mountain |
+|---|---|---|
+| Cold start (4 starts, ms) | 978, 974, 967, 1036 (average **989**) | 1173, 1120, 1155, 1133 (average **1145**) |
+| Memory of the launcher, PSS (`dumpsys meminfo`) | **22.9 MB** | **37.9 MB** |
+| of which native heap | 14.9 MB | 30.5 MB |
+| Resident memory (`top`) | 81 MB | 105 MB |
+| Free RAM of the whole TV (`dumpsys meminfo`) | 566 MB | 546 MB |
+| CPU while Home sits idle (`top`, 15 s) | 0.0 % | 0.0 % |
+| Smoothness moving through the icons (`dumpsys gfxinfo`, 12 key presses) | 33 frames, 51.5 % janky, median 20 ms, 90th percentile 40 ms | 52 frames, 40.4 % janky, median 15 ms, 90th percentile 40 ms |
+
+What that shows: Mountain used **about 15 MB more memory** (the decoded photograph, the copy of the mountains and
+the blurred copy of the picture) and took **about 0.15 s longer to start**. At rest neither used measurable CPU. I could
+not tell the two apart on smoothness: both have a lot of janky frames on this TV's GPU, and an earlier Lite run gave
+40 % janky with a 90th percentile of 25 ms, so the difference between the two is within the run-to-run noise of such
+small samples (the two runs also did slightly different key sequences, because Mountain starts with Down).
+
+The figures were taken before the dock was split into its three groups (streaming, games, the rest), which only adds a few more glass bands to draw. Not measured: memory while an app is open and Home is in the background (the photograph is released when Home's view
+goes away, which may not happen right away), and any other TV. On a TV with little free memory, stay on **Lite**: it is
+the default, and the choice is *Launcher settings → Theme*.
 ### Privacy and permissions
 
 The upstream launcher had no `INTERNET` permission. This fork adds it **only for the weather and, if you pick
@@ -133,7 +163,7 @@ tornare al launcher originale.
 - **Impostazioni sulla TV**: meteo acceso o spento (acceso di default), città del meteo, home cinematografica,
   cielo dinamico, frasi motivazionali (spente di default: elenco italiano incluso, oppure una frase inglese al
   giorno da ZenQuotes).
-- **Aspetto «orologio gigante»** (Impostazioni launcher, oppure `"clock_look": true` in un tema): una lock screen sulla TV, con foto del tramonto (CC BY-SA 4.0, vedi [CREDITS](themes/clock-look/CREDITS.md)), orologio di vetro in parte *dietro* la montagna, data sopra, meteo e frase in basso e pulsanti rotondi «liquid glass». Premendo Giù sale la dock con le icone quadrate; Su o Indietro la rimettono via.
+- **Tema «Mountain»** (Impostazioni launcher → Tema; il predefinito è *Lite*; oppure `"clock_look": true` in un tema): una lock screen sulla TV, con foto del tramonto (CC BY-SA 4.0, vedi [CREDITS](themes/clock-look/CREDITS.md)), orologio di vetro in parte *dietro* la montagna, data sopra, meteo e frase in basso e pulsanti rotondi «liquid glass». Premendo Giù salgono le dock con le icone quadrate, una per lo streaming, una per i giochi e una per tutto il resto; Su o Indietro le rimettono via. Costa un po' più di Lite: sulla Philips circa 15 MB di memoria in più e circa 0,15 s di avvio in più (misure nella sezione *Performance* sopra; sul resto, CPU a riposo e fluidità, non ho visto differenze apprezzabili).
 - **Icona rotonda** per le impostazioni del launcher accanto a quella delle impostazioni TV.
 - **Add-on Mercati** ([`addons/stocks`](addons/stocks/)): indici, materie prime, cambi e azioni (USA e italiane) su
   quattro pagine a schermo intero, con una card nella home. I dati arrivano da Yahoo Finance, possono essere in

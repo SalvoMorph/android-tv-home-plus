@@ -31,9 +31,15 @@ final class LiquidGlass {
     private final Paint shine = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint rim = new Paint(Paint.ANTI_ALIAS_FLAG);
     private float cachedL = Float.NaN, cachedT, cachedR, cachedB;
+    private int shineTop = 0x52FFFFFF;
 
     /** @param blur a small, already blurred copy of the whole backdrop; it is stretched over the whole window. */
     LiquidGlass(Bitmap blur, float density) {
+        this(blur, density, false);
+    }
+
+    /** @param dark glass for a pale picture: a navy tint instead of a white one, and no lift in brightness. */
+    LiquidGlass(Bitmap blur, float density, boolean dark) {
         this.density = density;
         this.bitmapW = blur.getWidth();
         this.bitmapH = blur.getHeight();
@@ -43,15 +49,18 @@ final class LiquidGlass {
         // Richer and a touch lighter than the picture, as glass over a blur looks.
         ColorMatrix color = new ColorMatrix();
         color.setSaturation(1.15f);
+        float lift = dark ? 1f : 1.08f;
+        float offset = dark ? -14f : 10f;
         color.postConcat(new ColorMatrix(new float[]{
-                1.08f, 0, 0, 0, 10,
-                0, 1.08f, 0, 0, 10,
-                0, 0, 1.08f, 0, 10,
+                lift, 0, 0, 0, offset,
+                0, lift, 0, 0, offset,
+                0, 0, lift, 0, offset,
                 0, 0, 0, 1, 0}));
         fill.setColorFilter(new ColorMatrixColorFilter(color));
         // Not fully opaque: the sharp picture shows faintly through the blurred copy, which is what makes it glass.
-        fill.setAlpha(170);
-        tint.setColor(0x24FFFFFF);
+        fill.setAlpha(dark ? 150 : 170);
+        tint.setColor(dark ? 0x4D223C6C : 0x24FFFFFF);
+        shineTop = dark ? 0x38FFFFFF : 0x52FFFFFF;
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(Math.max(1.5f, 1.4f * density));
     }
@@ -68,7 +77,7 @@ final class LiquidGlass {
         backdrop.setLocalMatrix(matrix);
         if (r.left != cachedL || r.top != cachedT || r.right != cachedR || r.bottom != cachedB) {
             float h = r.height();
-            shine.setShader(new LinearGradient(0, r.top, 0, r.top + h * 0.55f, 0x52FFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP));
+            shine.setShader(new LinearGradient(0, r.top, 0, r.top + h * 0.55f, shineTop, 0x00FFFFFF, Shader.TileMode.CLAMP));
             rim.setShader(new LinearGradient(r.left, r.top, r.right, r.bottom,
                     new int[]{0xE6FFFFFF, 0x33FFFFFF, 0x26FFFFFF, 0x99FFFFFF},
                     new float[]{0f, 0.35f, 0.7f, 1f}, Shader.TileMode.CLAMP));

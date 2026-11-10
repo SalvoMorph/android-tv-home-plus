@@ -90,11 +90,74 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             outRect.top = (int) (6 * density);
             outRect.bottom = (int) (12 * density);
         }
+        // Grouped docks: a gap before the first tile of each group after the first, so the glass bands stand apart.
+        if (AppAdapter.groupByKind && pos > 0 && parent.getAdapter() instanceof AppAdapter) {
+            AppAdapter adapter = (AppAdapter) parent.getAdapter();
+            if (adapter.groupAt(pos) != adapter.groupAt(pos - 1)) outRect.left = (int) (56 * density);
+        }
+    }
+
+    private final android.util.SparseArray<RectF> groupRects = new android.util.SparseArray<>();
+    private Paint labelPaint;
+
+    /**
+     * The Mountain theme: one band per group of apps (streaming, games, the rest), each with its heading above it. Only
+     * the tiles on screen count, so a band scrolled partly off the edge is cut there, as the single band is.
+     */
+    private void drawGroups(Canvas c, RecyclerView parent, AppAdapter adapter) {
+        groupRects.clear();
+        int cardWidth = 0;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            int pos = parent.getChildAdapterPosition(child);
+            int group = adapter.groupAt(pos);
+            if (group < 0) continue;
+            RecyclerView.ViewHolder vh = parent.getChildViewHolder(child);
+            View card = vh instanceof AppAdapter.Holder ? ((AppAdapter.Holder) vh).card : child.findViewById(R.id.card);
+            if (card == null) continue;
+            float l = child.getLeft() + card.getLeft();
+            float t = child.getTop() + card.getTop() + child.getTranslationY();
+            cardWidth = card.getWidth();
+            RectF rf = groupRects.get(group);
+            if (rf == null) groupRects.put(group, new RectF(l, t, l + cardWidth, t + card.getHeight()));
+            else rf.union(l, t, l + cardWidth, t + card.getHeight());
+        }
+        if (groupRects.size() == 0) return;
+        float pad = 14 * density;
+        float radius = AppAdapter.cornerRadius(cardWidth, density) + pad;
+        View root = parent.getRootView();
+        parent.getLocationInWindow(where);
+        if (labelPaint == null) {
+            labelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            labelPaint.setColor(0xE6FFFFFF);
+            labelPaint.setTextSize(14 * density);
+            labelPaint.setLetterSpacing(0.14f);
+            labelPaint.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
+            labelPaint.setShadowLayer(6 * density, 0, 2 * density, 0xAA000000);
+        }
+        for (int i = 0; i < groupRects.size(); i++) {
+            RectF rf = groupRects.valueAt(i);
+            rf.inset(-pad, -pad);
+            rf.left = Math.max(rf.left, density);
+            rf.right = Math.min(rf.right, parent.getWidth() - density);
+            if (glass != null && root.getWidth() > 0) {
+                glass.draw(c, rf, radius, where[0], where[1], root.getWidth(), root.getHeight());
+            } else {
+                c.drawRoundRect(rf, radius, radius, band);
+                c.drawRoundRect(rf, radius, radius, edge);
+            }
+            String heading = adapter.groupName(groupRects.keyAt(i)).toUpperCase(java.util.Locale.getDefault());
+            c.drawText(heading, rf.left + radius * 0.6f, rf.top - 12 * density, labelPaint);
+        }
     }
 
     @Override
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         if (!bandVisible) return;
+        if (AppAdapter.groupByKind && parent.getAdapter() instanceof AppAdapter) {
+            drawGroups(c, parent, (AppAdapter) parent.getAdapter());
+            return;
+        }
         boolean any = false;
         int cardWidth = 0;
         for (int i = 0; i < parent.getChildCount(); i++) {

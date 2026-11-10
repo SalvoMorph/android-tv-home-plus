@@ -165,7 +165,16 @@
     <string name="weather_home_hint">Meteo: scegli la città in Impostazioni launcher</string>
     <string name="weather_hint">Disattiva il meteo per nasconderlo e non usare la rete. Scegli una città dall\'elenco; per un\'altra località imposta weather_city in un tema.</string>
     <string name="weather_city_unset">Non impostata</string>
-    <string name="clock_look_state">Aspetto orologio gigante: %1$s</string>
+    <string name="theme_state">Tema: %1$s</string>
+    <string name="theme_title">Scegli il tema</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Giochi</string>
+    <string name="dock_group_other">App</string>
+    <string name="theme_hint">Lite è il tema leggero predefinito. Mountain disegna una foto e un orologio di vetro: sulla Philips ha usato circa 15 MB di memoria in più e si è avviato circa 0,15 s più lentamente. La tua TV può differire.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
     <string name="cinematic_state">Home cinematografica: %1$s</string>
     <string name="sky_state">Cielo dinamico: %1$s</string>
     <string name="sky_low">Leggero</string>
