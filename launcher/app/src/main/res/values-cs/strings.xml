@@ -112,4 +112,14 @@
     <string name="clock_format_system">Systém</string>
     <string name="clock_format_12">12hodinové</string>
     <string name="clock_format_24">24hodinové</string>
+    <string name="theme_state">Motiv: %1$s</string>
+    <string name="theme_title">Vyberte motiv</string>
+    <string name="dock_group_streaming">Streamování</string>
+    <string name="dock_group_games">Hry</string>
+    <string name="dock_group_other">Aplikace</string>
+    <string name="theme_hint">Lite je lehký výchozí motiv. Mountain vykresluje fotografii a skleněné hodiny: na Philipsu zabral asi o 15 MB více paměti a spouštěl se asi o 0,15 s pomaleji. Váš televizor se může lišit.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

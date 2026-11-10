@@ -114,4 +114,14 @@
     <string name="clock_format_system">Tizim</string>
     <string name="clock_format_12">12 soatlik</string>
     <string name="clock_format_24">24 soatlik</string>
+    <string name="theme_state">Mavzu: %1$s</string>
+    <string name="theme_title">Mavzuni tanlang</string>
+    <string name="dock_group_streaming">Striming</string>
+    <string name="dock_group_games">O‘yinlar</string>
+    <string name="dock_group_other">Ilovalar</string>
+    <string name="theme_hint">Lite — yengil standart mavzu. Mountain fotosurat va shisha soatni chizadi: Philips’da u taxminan 15 MB ko‘proq xotira ishlatdi va taxminan 0,15 s sekinroq ishga tushdi. Sizning televizoringizda natija boshqacha bo‘lishi mumkin.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

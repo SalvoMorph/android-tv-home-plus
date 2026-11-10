@@ -98,4 +98,14 @@
     <string name="clock_format_system">Système</string>
     <string name="clock_format_12">12 heures</string>
     <string name="clock_format_24">24 heures</string>
+    <string name="theme_state">Thème : %1$s</string>
+    <string name="theme_title">Choisir un thème</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Jeux</string>
+    <string name="dock_group_other">Applis</string>
+    <string name="theme_hint">Lite est le thème léger par défaut. Mountain affiche une photo et une horloge de verre : sur la Philips, il a utilisé environ 15 Mo de mémoire en plus et démarré environ 0,15 s plus lentement. Votre téléviseur peut différer.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

@@ -74,4 +74,14 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12 Stunden</string>
     <string name="clock_format_24">24 Stunden</string>
+    <string name="theme_state">Design: %1$s</string>
+    <string name="theme_title">Design auswählen</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Spiele</string>
+    <string name="dock_group_other">Apps</string>
+    <string name="theme_hint">Lite ist das schlanke Standarddesign. Mountain zeichnet ein Foto und eine Glasuhr: auf dem Philips brauchte es etwa 15 MB mehr Speicher und startete etwa 0,15 s langsamer. Ihr Fernseher kann abweichen.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

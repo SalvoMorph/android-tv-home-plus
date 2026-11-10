@@ -119,4 +119,14 @@
     <string name="race_race_short">CARRERA</string>
     <string name="last_opened">Abierta per última vegada %1$s</string>
     <string name="game_live">En direutu</string>
+    <string name="theme_state">Tema: %1$s</string>
+    <string name="theme_title">Escueye un tema</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Xuegos</string>
+    <string name="dock_group_other">Aplicaciones</string>
+    <string name="theme_hint">Lite ye\'l tema lixeru per defeutu. Mountain dibuxa una semeya y un reló de vidru: na Philips usó unos 15 MB más de memoria y arrancó unos 0,15 s más sele. La to tele pue ser distinta.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

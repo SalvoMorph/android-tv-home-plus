@@ -115,4 +115,14 @@
     <string name="clock_format_system">Järjestelmä</string>
     <string name="clock_format_12">12 tuntia</string>
     <string name="clock_format_24">24 tuntia</string>
+    <string name="theme_state">Teema: %1$s</string>
+    <string name="theme_title">Valitse teema</string>
+    <string name="dock_group_streaming">Suoratoisto</string>
+    <string name="dock_group_games">Pelit</string>
+    <string name="dock_group_other">Sovellukset</string>
+    <string name="theme_hint">Lite on kevyt oletusteema. Mountain piirtää valokuvan ja lasisen kellon: Philipsillä se käytti noin 15 Mt enemmän muistia ja käynnistyi noin 0,15 s hitaammin. Televisiosi voi poiketa.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

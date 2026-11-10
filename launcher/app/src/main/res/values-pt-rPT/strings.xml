@@ -14,4 +14,14 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12-hour</string>
     <string name="clock_format_24">24-hour</string>
+    <string name="theme_state">Tema: %1$s</string>
+    <string name="theme_title">Escolher um tema</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Jogos</string>
+    <string name="dock_group_other">Aplicações</string>
+    <string name="theme_hint">Lite é o tema leve predefinido. O Mountain desenha uma fotografia e um relógio de vidro: na Philips usou cerca de 15 MB a mais de memória e arrancou cerca de 0,15 s mais devagar. A sua TV pode variar.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

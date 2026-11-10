@@ -101,4 +101,14 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12 timer</string>
     <string name="clock_format_24">24 timer</string>
+    <string name="theme_state">Tema: %1$s</string>
+    <string name="theme_title">Vælg et tema</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Spil</string>
+    <string name="dock_group_other">Apps</string>
+    <string name="theme_hint">Lite er det lette standardtema. Mountain tegner et fotografi og et ur af glas: på Philips brugte det ca. 15 MB mere hukommelse og startede ca. 0,15 s langsommere. Dit tv kan afvige.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

@@ -154,4 +154,14 @@
     <string name="clock_format_system">Системний</string>
     <string name="clock_format_12">12-годинний</string>
     <string name="clock_format_24">24-годинний</string>
+    <string name="theme_state">Тема: %1$s</string>
+    <string name="theme_title">Оберіть тему</string>
+    <string name="dock_group_streaming">Стрімінг</string>
+    <string name="dock_group_games">Ігри</string>
+    <string name="dock_group_other">Застосунки</string>
+    <string name="theme_hint">Lite — легка тема за замовчуванням. Mountain малює фотографію та скляний годинник: на Philips вона займала приблизно на 15 МБ більше пам’яті й запускалася приблизно на 0,15 с повільніше. На вашому телевізорі результат може відрізнятися.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

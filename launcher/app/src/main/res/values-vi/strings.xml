@@ -126,4 +126,14 @@
     <string name="clock_format_system">Hệ thống</string>
     <string name="clock_format_12">12 giờ</string>
     <string name="clock_format_24">24 giờ</string>
+    <string name="theme_state">Giao diện: %1$s</string>
+    <string name="theme_title">Chọn giao diện</string>
+    <string name="dock_group_streaming">Phát trực tuyến</string>
+    <string name="dock_group_games">Trò chơi</string>
+    <string name="dock_group_other">Ứng dụng</string>
+    <string name="theme_hint">Lite là giao diện nhẹ mặc định. Mountain vẽ một bức ảnh và đồng hồ kính: trên Philips, nó dùng thêm khoảng 15 MB bộ nhớ và khởi động chậm hơn khoảng 0,15 giây. TV của bạn có thể khác.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

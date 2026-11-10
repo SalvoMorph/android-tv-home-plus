@@ -71,4 +71,14 @@
     <string name="clock_format_system">ระบบ</string>
     <string name="clock_format_12">12 ชั่วโมง</string>
     <string name="clock_format_24">24 ชั่วโมง</string>
+    <string name="theme_state">ธีม: %1$s</string>
+    <string name="theme_title">เลือกธีม</string>
+    <string name="dock_group_streaming">สตรีมมิง</string>
+    <string name="dock_group_games">เกม</string>
+    <string name="dock_group_other">แอป</string>
+    <string name="theme_hint">Lite คือธีมเริ่มต้นแบบเบา Mountain วาดภาพถ่ายและนาฬิกากระจก บน Philips ใช้หน่วยความจำเพิ่มประมาณ 15 MB และเริ่มทำงานช้าลงประมาณ 0.15 วินาที ทีวีของคุณอาจต่างออกไป</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

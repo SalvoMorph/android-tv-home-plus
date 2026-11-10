@@ -152,4 +152,14 @@
     <string name="clock_format_system">מערכת</string>
     <string name="clock_format_12">12 שעות</string>
     <string name="clock_format_24">24 שעות</string>
+    <string name="theme_state">ערכת נושא: %1$s</string>
+    <string name="theme_title">בחר ערכת נושא</string>
+    <string name="dock_group_streaming">סטרימינג</string>
+    <string name="dock_group_games">משחקים</string>
+    <string name="dock_group_other">אפליקציות</string>
+    <string name="theme_hint">Lite היא ערכת הנושא הקלה כברירת מחדל. Mountain מציירת תצלום ושעון זכוכית: ב-Philips היא השתמשה בכ-15 MB זיכרון נוסף ונטענה לאט יותר בכ-0.15 שניות. ייתכן שהטלוויזיה שלך תתנהג אחרת.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

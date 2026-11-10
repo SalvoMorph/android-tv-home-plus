@@ -97,4 +97,14 @@
     <string name="clock_format_system">Sistem</string>
     <string name="clock_format_12">12 saat</string>
     <string name="clock_format_24">24 saat</string>
+    <string name="theme_state">Tema: %1$s</string>
+    <string name="theme_title">Bir tema seçin</string>
+    <string name="dock_group_streaming">Akış</string>
+    <string name="dock_group_games">Oyunlar</string>
+    <string name="dock_group_other">Uygulamalar</string>
+    <string name="theme_hint">Lite, hafif varsayılan temadır. Mountain bir fotoğraf ve cam bir saat çizer: Philips\'te yaklaşık 15 MB daha fazla bellek kullandı ve yaklaşık 0,15 sn daha yavaş başladı. Sizin televizyonunuzda sonuç farklı olabilir.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

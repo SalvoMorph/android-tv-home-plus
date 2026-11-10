@@ -99,4 +99,14 @@
     <string name="clock_format_system">Systemowy</string>
     <string name="clock_format_12">12-godzinny</string>
     <string name="clock_format_24">24-godzinny</string>
+    <string name="theme_state">Motyw: %1$s</string>
+    <string name="theme_title">Wybierz motyw</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Gry</string>
+    <string name="dock_group_other">Aplikacje</string>
+    <string name="theme_hint">Lite to lekki motyw domyślny. Mountain rysuje zdjęcie i szklany zegar: na Philipsie zużywał ok. 15 MB więcej pamięci i uruchamiał się ok. 0,15 s wolniej. Twój telewizor może się różnić.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

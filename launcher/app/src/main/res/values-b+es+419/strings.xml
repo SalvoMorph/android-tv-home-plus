@@ -145,4 +145,14 @@
     <string name="race_countdown_hours">%1$dh %2$dm</string>
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Última apertura: %1$s</string>
+    <string name="theme_state">Tema: %1$s</string>
+    <string name="theme_title">Elige un tema</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Juegos</string>
+    <string name="dock_group_other">Apps</string>
+    <string name="theme_hint">Lite es el tema liviano predeterminado. Mountain dibuja una fotografía y un reloj de vidrio: en la Philips usó unos 15 MB más de memoria y arrancó unos 0,15 s más lento. Tu TV puede variar.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

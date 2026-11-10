@@ -113,4 +113,14 @@
     <string name="clock_format_system">Sistem</string>
     <string name="clock_format_12">12 jam</string>
     <string name="clock_format_24">24 jam</string>
+    <string name="theme_state">Tema: %1$s</string>
+    <string name="theme_title">Pilih tema</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Game</string>
+    <string name="dock_group_other">Aplikasi</string>
+    <string name="theme_hint">Lite adalah tema ringan bawaan. Mountain menampilkan foto dan jam kaca: di Philips, tema ini memakai sekitar 15 MB memori lebih banyak dan mulai sekitar 0,15 dtk lebih lambat. TV Anda mungkin berbeda.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

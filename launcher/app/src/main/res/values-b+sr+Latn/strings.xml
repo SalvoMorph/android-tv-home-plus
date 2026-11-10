@@ -79,4 +79,14 @@
     <string name="clock_format_system">Sistem</string>
     <string name="clock_format_12">12-časovni</string>
     <string name="clock_format_24">24-časovni</string>
+    <string name="theme_state">Tema: %1$s</string>
+    <string name="theme_title">Izaberi temu</string>
+    <string name="dock_group_streaming">Striming</string>
+    <string name="dock_group_games">Igre</string>
+    <string name="dock_group_other">Aplikacije</string>
+    <string name="theme_hint">Lite je lagana podrazumevana tema. Mountain crta fotografiju i stakleni sat: na Philipsu je koristila oko 15 MB više memorije i pokretala se oko 0,15 s sporije. Vaš TV može da se razlikuje.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

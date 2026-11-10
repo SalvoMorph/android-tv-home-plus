@@ -115,4 +115,14 @@
     <string name="clock_format_system">Systeem</string>
     <string name="clock_format_12">12-uurs</string>
     <string name="clock_format_24">24-uurs</string>
+    <string name="theme_state">Thema: %1$s</string>
+    <string name="theme_title">Kies een thema</string>
+    <string name="dock_group_streaming">Streaming</string>
+    <string name="dock_group_games">Games</string>
+    <string name="dock_group_other">Apps</string>
+    <string name="theme_hint">Lite is het lichte standaardthema. Mountain tekent een foto en een glazen klok: op de Philips gebruikte het ongeveer 15 MB meer geheugen en startte het ongeveer 0,15 s trager. Jouw tv kan afwijken.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

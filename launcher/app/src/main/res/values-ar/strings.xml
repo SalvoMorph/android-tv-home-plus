@@ -101,4 +101,14 @@
     <string name="clock_format_system">النظام</string>
     <string name="clock_format_12">12 ساعة</string>
     <string name="clock_format_24">24 ساعة</string>
+    <string name="theme_state">السمة: %1$s</string>
+    <string name="theme_title">اختر سمة</string>
+    <string name="dock_group_streaming">البث</string>
+    <string name="dock_group_games">الألعاب</string>
+    <string name="dock_group_other">التطبيقات</string>
+    <string name="theme_hint">Lite هي السمة الخفيفة الافتراضية. تعرض Mountain صورة وساعة زجاجية: على جهاز Philips استهلكت نحو 15 ميغابايت إضافية من الذاكرة وبدأت أبطأ بنحو 0.15 ثانية. قد يختلف تلفازك.</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>

@@ -151,4 +151,14 @@
     <string name="clock_format_system">系统</string>
     <string name="clock_format_12">12 小时制</string>
     <string name="clock_format_24">24 小时制</string>
+    <string name="theme_state">主题：%1$s</string>
+    <string name="theme_title">选择主题</string>
+    <string name="dock_group_streaming">流媒体</string>
+    <string name="dock_group_games">游戏</string>
+    <string name="dock_group_other">应用</string>
+    <string name="theme_hint">Lite 是轻量的默认主题。Mountain 会绘制照片和玻璃时钟：在 Philips 上多占用约 15 MB 内存，启动慢约 0.15 秒。你的电视可能有所不同。</string>
+    <string name="theme_lite">Lite</string>
+    <string name="theme_mountain">Mountain</string>
+    <string name="theme_glacier">Glacier</string>
+    <string name="theme_alpenglow">Alpenglow</string>
 </resources>
