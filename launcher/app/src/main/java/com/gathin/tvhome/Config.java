@@ -46,6 +46,7 @@ final class Config {
     static final String WEATHER_ENABLED_KEY = "weather_enabled";
     static final String QUOTES_CHOICE_KEY = "quotes_mode";
     static final String CINEMATIC_CHOICE_KEY = "cinematic_home";
+    static final String CLOCK_LOOK_KEY = "clock_look";
     static final String SKY_CHOICE_KEY = "sky_intensity";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
     static final String CLOCK_FORMAT_KEY = "clock_format";
@@ -235,6 +236,11 @@ final class Config {
     final boolean weatherEnabled;
     /** A round Launcher settings icon beside TV Settings (config.xml launcher_settings_icon). */
     final boolean launcherSettingsIcon;
+    /**
+     * The "big clock" look (config.xml clock_look, a theme's clock_look, or the on-TV switch): a huge clock over a
+     * drawn dusk landscape with one low row of small icons. It overrides the dock and effect settings it needs.
+     */
+    final boolean clockLook;
     /** The motivational line under the clock: "off" (default), "local" (the built-in list) or "online" (see Quotes). */
     final String quotesMode;
     /** The glow in the focused app's colour behind the dock (config.xml, ambient_glow); false keeps the background plain. */
@@ -310,7 +316,8 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
                    int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap,
-                   boolean settingsKeyClearTask, String weatherCity, boolean weatherEnabled, boolean launcherSettingsIcon, String quotesMode) {
+                   boolean settingsKeyClearTask, String weatherCity, boolean weatherEnabled, boolean launcherSettingsIcon, String quotesMode, boolean clockLook) {
+        this.clockLook = clockLook;
         this.quotesMode = quotesMode;
         this.launcherSettingsIcon = launcherSettingsIcon;
         this.weatherCity = weatherCity;
@@ -529,6 +536,7 @@ final class Config {
         String weatherCity = res.getString(R.string.weather_city).trim();
         boolean weatherEnabled = res.getBoolean(R.bool.weather_enabled);
         boolean launcherSettingsIcon = res.getBoolean(R.bool.launcher_settings_icon);
+        boolean clockLook = res.getBoolean(R.bool.clock_look);
         String quotesMode = res.getString(R.string.quotes_mode).trim();
         boolean ambientGlow = res.getBoolean(R.bool.ambient_glow);
         boolean appGlow = res.getBoolean(R.bool.app_glow);
@@ -649,6 +657,7 @@ final class Config {
             weatherCity = string(json, "weather_city", weatherCity);
             weatherEnabled = bool(json, "weather_enabled", weatherEnabled);
             launcherSettingsIcon = bool(json, "launcher_settings_icon", launcherSettingsIcon);
+            clockLook = bool(json, "clock_look", clockLook);
             quotesMode = string(json, "quotes", quotesMode);
             ambientGlow = bool(json, "ambient_glow", ambientGlow);
             appGlow = bool(json, "app_glow", appGlow);
@@ -713,6 +722,28 @@ final class Config {
         }
         weatherEnabled = choices.getBoolean(WEATHER_ENABLED_KEY, weatherEnabled);
         quotesMode = Quotes.normalize(choices.getString(QUOTES_CHOICE_KEY, quotesMode));
+        clockLook = choices.getBoolean(CLOCK_LOOK_KEY, clockLook);
+        if (clockLook) {
+            // One low row of small icons, no app name, no glow or sky: the clock and the landscape are the look.
+            dockRow = true;
+            singleRow = true;
+            dockBandAll = true;
+            dockGlass = true;
+            dockEvenPadding = true;
+            dockTitle = false;
+            rowsBelow = 0;
+            columns = 11;   // small icons, like a dock
+            iconOnlyButtons = true;
+            iconOnlyInputs = true;
+            cinematic = false;
+            ambientGlow = false;
+            appGlow = false;
+            fadeRows = false;
+            skyIntensity = 0;
+            uniformTiles = true;   // an icon on a tinted card, the name only under the focused one
+            showGreeting = true;   // the line above the clock carries the date and the weather instead
+            dateBelowClock = false;
+        }
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
         // A theme can also switch the wallpaper off while the file is still there.
@@ -763,7 +794,7 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap,
-                settingsKeyClearTask, weatherCity, weatherEnabled, launcherSettingsIcon, quotesMode);
+                settingsKeyClearTask, weatherCity, weatherEnabled, launcherSettingsIcon, quotesMode, clockLook);
     }
 
     /**
@@ -809,14 +840,14 @@ final class Config {
                     .remove("advanced_effects").remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY)
                     .remove(DOCK_OPACITY_KEY).remove(CLOCK_FORMAT_KEY)
                     .remove(WEATHER_CHOICE_KEY).remove(WEATHER_ENABLED_KEY).remove(CINEMATIC_CHOICE_KEY)
-                    .remove(SKY_CHOICE_KEY).remove(QUOTES_CHOICE_KEY);
+                    .remove(SKY_CHOICE_KEY).remove(QUOTES_CHOICE_KEY).remove(CLOCK_LOOK_KEY);
             editor.putString(THEME_SIGNATURE_KEY, signature).commit();
         } else if (!seen.equals(signature)) {
             choices.edit().remove("columns").remove("animations").remove("advanced_effects")
                     .remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY).remove(DOCK_OPACITY_KEY)
                     .remove(CLOCK_FORMAT_KEY).remove(WEATHER_CHOICE_KEY).remove(WEATHER_ENABLED_KEY)
                     .remove(CINEMATIC_CHOICE_KEY)
-                    .remove(SKY_CHOICE_KEY).remove(QUOTES_CHOICE_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
+                    .remove(SKY_CHOICE_KEY).remove(QUOTES_CHOICE_KEY).remove(CLOCK_LOOK_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
         }
     }
 

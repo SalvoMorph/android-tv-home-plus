@@ -19,6 +19,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint edge = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF rect = new RectF();
+    /** The big-clock look's glass for the band (set once, before the first draw); null keeps the plain translucent band. */
+    private LiquidGlass glass;
+    private final int[] where = new int[2];
+
+    void setGlass(LiquidGlass glass) {
+        this.glass = glass;
+    }
 
     /** Extra band below the tiles for their names (always_show_names), in px. */
     private final float namesRoom;
@@ -145,6 +152,14 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
                     Shader.TileMode.CLAMP));
             shaderTop = rect.top;
             shaderBottom = rect.bottom;
+        }
+        if (glass != null) {
+            View root = parent.getRootView();
+            if (root.getWidth() > 0) {
+                parent.getLocationInWindow(where);
+                glass.draw(c, rect, radius, where[0], where[1], root.getWidth(), root.getHeight());
+                return;
+            }
         }
         c.drawRoundRect(rect, radius, radius, band);
         c.drawRoundRect(rect, radius, radius, edge);

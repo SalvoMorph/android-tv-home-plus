@@ -12,6 +12,44 @@
         android:layout_height="match_parent"
         android:importantForAccessibility="no" />
 
+    <!-- The big-clock look (config clock_look), drawn like a phone lock screen: the photograph, the glass clock and the
+         mountains in front of it. Gone otherwise. -->
+    <com.gathin.tvhome.LockScreenView
+        android:id="@+id/scenic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
+    <!-- The big-clock look's two bottom widgets: the weather (bottom left) and the quote (bottom right). MainActivity
+         moves those views here; they fade out while the dock is up. Gone otherwise. -->
+    <FrameLayout
+        android:id="@+id/lookWidgets"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:focusable="false"
+        android:importantForAccessibility="no">
+
+        <LinearLayout
+            android:id="@+id/lookWeatherSlot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="64dp"
+            android:layout_marginBottom="58dp"
+            android:orientation="vertical" />
+
+        <LinearLayout
+            android:id="@+id/lookQuoteSlot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="64dp"
+            android:layout_marginBottom="58dp"
+            android:orientation="vertical" />
+    </FrameLayout>
+
     <!-- Cinematic top shelf (cinematic_home): the focused dock app's artwork, a few pixels across and
          stretched over the screen, which softens it like a blur without the cost of one. Hidden otherwise. -->
     <ImageView

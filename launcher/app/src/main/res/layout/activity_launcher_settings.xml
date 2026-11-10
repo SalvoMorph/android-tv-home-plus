@@ -155,6 +155,11 @@
             android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/clockLookChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="18dp" />
+
+        <TextView
             android:id="@+id/cinematicChoice"
             style="@style/SettingsRow"
             android:layout_marginTop="18dp" />

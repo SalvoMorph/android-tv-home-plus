@@ -48,6 +48,8 @@ public final class LauncherSettingsActivity extends Activity {
     private TextView weatherShowRow;
     private TextView weatherRow;
     private TextView cinematicRow;
+    private TextView clockLookRow;
+    private boolean clockLook;
     private TextView skyRow;
     private TextView quotesRow;
     private String weatherCity;
@@ -172,6 +174,13 @@ public final class LauncherSettingsActivity extends Activity {
         });
         weatherRow = findViewById(R.id.weatherChoice);
         weatherRow.setOnClickListener(v -> showWeatherPicker());
+        clockLookRow = findViewById(R.id.clockLookChoice);
+        clockLookRow.setOnClickListener(v -> {
+            clockLook = !clockLook;
+            choices.edit().putBoolean(Config.CLOCK_LOOK_KEY, clockLook).apply();
+            changed();
+            refresh();
+        });
         cinematicRow = findViewById(R.id.cinematicChoice);
         cinematicRow.setOnClickListener(v -> {
             cinematic = !cinematic;
@@ -202,7 +211,7 @@ public final class LauncherSettingsActivity extends Activity {
                     .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
                     .remove(Config.DOCK_OPACITY_KEY).remove(Config.CLOCK_FORMAT_KEY).remove(OpenOnStart.KEY)
                     .remove(Config.WEATHER_CHOICE_KEY).remove(Config.WEATHER_ENABLED_KEY).remove(Config.CINEMATIC_CHOICE_KEY)
-                    .remove(Config.SKY_CHOICE_KEY).remove(Config.QUOTES_CHOICE_KEY).commit();
+                    .remove(Config.CLOCK_LOOK_KEY).remove(Config.SKY_CHOICE_KEY).remove(Config.QUOTES_CHOICE_KEY).commit();
             Config current = Config.load(this);
             readLook(current);
             columns = current.columns;
@@ -230,6 +239,7 @@ public final class LauncherSettingsActivity extends Activity {
         weatherCity = config.weatherCity;
         weatherOn = config.weatherEnabled;
         cinematic = config.cinematicHome;
+        clockLook = config.clockLook;
         sky = config.skyIntensity;
         quotesMode = config.quotesMode;
     }
@@ -407,6 +417,8 @@ public final class LauncherSettingsActivity extends Activity {
                 weatherCity.isEmpty() ? getString(R.string.weather_city_unset) : weatherCity));
         weatherRow.setEnabled(weatherOn);
         weatherRow.setAlpha(weatherOn ? 1f : 0.5f);
+        clockLookRow.setText(getString(R.string.clock_look_state,
+                getString(clockLook ? R.string.on : R.string.off)));
         cinematicRow.setText(getString(R.string.cinematic_state,
                 getString(cinematic ? R.string.on : R.string.off)));
         skyRow.setText(getString(R.string.sky_state,
@@ -420,7 +432,7 @@ public final class LauncherSettingsActivity extends Activity {
 
     private boolean hasOnTvChoices() {
         return choices.contains(Config.WEATHER_CHOICE_KEY) || choices.contains(Config.WEATHER_ENABLED_KEY)
-                || choices.contains(Config.CINEMATIC_CHOICE_KEY)
+                || choices.contains(Config.CINEMATIC_CHOICE_KEY) || choices.contains(Config.CLOCK_LOOK_KEY)
                 || choices.contains(Config.SKY_CHOICE_KEY) || choices.contains(Config.QUOTES_CHOICE_KEY)
                 || choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")

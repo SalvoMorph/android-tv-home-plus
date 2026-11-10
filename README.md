@@ -25,10 +25,24 @@ with about 1–2 GB of RAM.
   (one request a day; the list shows while it loads or if the answer does not suit).
 - **A small round Launcher settings icon** beside the TV Settings button (`launcher_settings_icon`, on by default),
   so the settings are one press away without a long press.
+- **A "big clock" look**, switched on in Launcher settings (or with `"clock_look": true` in a theme, see
+  [`themes/clock-look`](themes/clock-look/config.json)): a phone lock screen on the TV, with a photograph (CC BY-SA 4.0, credited in
+  [CREDITS](themes/clock-look/CREDITS.md)), a huge glass clock partly *behind* the mountain, the date above it, the weather and
+  a quote at the bottom and round liquid-glass buttons. Press Down and the dock of square icon cards comes up; Up or Back puts
+  it away. The glass is drawn from a tiny blurred copy of the picture, not blurred live, so it stays cheap on an old TV.
+- **The name of a focused icon-only top button** appears above the row.
 - **An add-on for the markets**, [`addons/stocks`](addons/stocks/): indices, commodities, currencies and stocks on four
   full-screen pages, with a card on Home. A separate app, so the launcher does not depend on it.
 - A ready theme for the Philips above: [`themes/philips-tpm171e`](themes/philips-tpm171e/config.json).
 - Italian strings for the new rows.
+
+### Screenshots
+
+Taken on the Philips 55POS9002/12 (the weather place is replaced by "YOUR CITY" in the first picture).
+
+| The big-clock look | Down brings the dock up | The Markets add-on |
+|---|---|---|
+| ![The big-clock look: a glass clock behind the mountain, the date, weather and a quote](docs/screenshots/lock-screen.jpg) | ![The same screen with the dock of icon cards raised](docs/screenshots/lock-screen-dock.jpg) | ![The Markets add-on: indices with price and change](docs/screenshots/markets-addon.jpg) |
 
 ### Cost on the TV
 
@@ -119,6 +133,7 @@ tornare al launcher originale.
 - **Impostazioni sulla TV**: meteo acceso o spento (acceso di default), città del meteo, home cinematografica,
   cielo dinamico, frasi motivazionali (spente di default: elenco italiano incluso, oppure una frase inglese al
   giorno da ZenQuotes).
+- **Aspetto «orologio gigante»** (Impostazioni launcher, oppure `"clock_look": true` in un tema): una lock screen sulla TV, con foto del tramonto (CC BY-SA 4.0, vedi [CREDITS](themes/clock-look/CREDITS.md)), orologio di vetro in parte *dietro* la montagna, data sopra, meteo e frase in basso e pulsanti rotondi «liquid glass». Premendo Giù sale la dock con le icone quadrate; Su o Indietro la rimettono via.
 - **Icona rotonda** per le impostazioni del launcher accanto a quella delle impostazioni TV.
 - **Add-on Mercati** ([`addons/stocks`](addons/stocks/)): indici, materie prime, cambi e azioni (USA e italiane) su
   quattro pagine a schermo intero, con una card nella home. I dati arrivano da Yahoo Finance, possono essere in

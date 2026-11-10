@@ -25,6 +25,7 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -599,6 +600,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         quotesMode = quoteLine == null ? Quotes.OFF : Quotes.normalize(cfg.quotesMode);
         weatherCity = weatherBlock == null ? "" : cfg.weatherCity;
         weatherEnabled = weatherBlock != null && cfg.weatherEnabled;
+        clockLook = cfg.clockLook && weatherBlock != null;
+        AppAdapter.squareTiles = clockLook;
+        if (clockLook) setUpClockLook(cfg);
         raceCalendar = cfg.raceCalendar;
         racePanel = findViewById(R.id.racePanel);
         raceKicker = findViewById(R.id.raceKicker);
@@ -710,8 +714,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             public void onChildViewDetachedFromWindow(@NonNull View v) {
             }
         });
-        if (dockRow) grid.addItemDecoration(new DockDecoration(COLUMNS, density, cinematic, cfg.alwaysShowNames, cfg.dockOpacity, cfg.dockGlass, cfg.dockEvenPadding, cfg.dockBand,
-                singleRow, cfg.dockBandAll));
+        if (dockRow) {
+            DockDecoration dockBand = new DockDecoration(COLUMNS, density, cinematic, cfg.alwaysShowNames, cfg.dockOpacity, cfg.dockGlass, cfg.dockEvenPadding, cfg.dockBand,
+                    singleRow, cfg.dockBandAll);
+            if (lookGlass != null) dockBand.setGlass(lookGlass);   // the big-clock look's liquid glass
+            grid.addItemDecoration(dockBand);
+        }
         if (cfg.fadeRows) TopFade.attach(grid, 48 * density);
         // Reduced motion: the tiles are simply there, with no entrance (reloadApps skips it there too).
         if (animations && !reducedMotion) {
@@ -1149,6 +1157,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         restartIdleClock();
+        resetDock();
         promptsPaused = false;
         if (grid.getAdapter() == null) grid.setAdapter(adapter);   // dropped by onTrimMemory
         switch (tileRefresh.onResume(packagesChangedSinceRebuild())) {
@@ -1486,6 +1495,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (resumed && event.getKeyCode() >= 1000 && RemoteKeys.handle(this, event, homeAppKeys.get(event.getKeyCode()),
                 homeHoldAppKeys.get(event.getKeyCode()))) return true;
         if (handleSettingsKey(event)) return true;
+        if (clockLook && !reordering && openPopup == null && appLibrary == null && cardPrompt == null
+                && event.getAction() == KeyEvent.ACTION_DOWN) {
+            // The lock-screen look: Down brings the dock up; Up from it, or Back, puts it away.
+            int code = event.getKeyCode();
+            View focused = getCurrentFocus();
+            boolean onTile = focused != null && focused.getId() == R.id.card;
+            if (!dockShown && code == KeyEvent.KEYCODE_DPAD_DOWN) {
+                showDock();
+                return true;
+            }
+            if (dockShown && ((code == KeyEvent.KEYCODE_DPAD_UP && onTile) || code == KeyEvent.KEYCODE_BACK)) {
+                hideDock();
+                return true;
+            }
+        }
         if (holdOk(event)) return true;
         if (tileMenuEnabled && !reordering && openPopup == null && cardPrompt == null
                 && event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
@@ -2327,28 +2351,41 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private float heroTopY = Float.NaN;
 
     /**
-     * The quote sits under the weather and the app name sits just above the dock: keep the quote off the name.
-     * Two lines first, then one, then hidden, whichever fits the room between them.
+     * Shows the whole quote, never half of it. With the app name above the dock the room is between the quote and the
+     * name; without it (the big-clock look) there is no limit. From the biggest type and the fewest lines to the
+     * smallest type and three lines, the first that shows the whole sentence in the room wins; if none does, the
+     * quote is hidden rather than cut.
      */
     private void fitQuote() {
         if (quoteLine == null || quoteLine.getVisibility() == View.GONE || quoteLine.getText().length() == 0) return;
-        if (Float.isNaN(heroTopY) || quoteLine.getWidth() == 0) return;
-        for (int lines = 2; lines >= 0; lines--) {
-            if (lines == 0) {
-                quoteLine.setVisibility(View.INVISIBLE);
-                return;
+        if (quoteLine.getWidth() == 0) return;
+        boolean nameShown = !Float.isNaN(heroTopY) && hero.getVisibility() == View.VISIBLE;
+        // The name's view starts above its letters: compare with where the capitals begin.
+        float limit = nameShown
+                ? heroTopY + heroName.getBaseline() - heroName.getTextSize() * 0.72f - 8 * density
+                : Float.MAX_VALUE;
+        quoteLine.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        int w = View.MeasureSpec.makeMeasureSpec(quoteLine.getWidth(), View.MeasureSpec.EXACTLY);
+        // The lock-screen look starts bigger and may use four lines: its quote is a widget with room of its own.
+        float[] sizes = clockLook ? new float[]{20f, 18f, 16f, 14f, 13f, 12f} : new float[]{16f, 15f, 14f, 13f, 12f};
+        for (float sp : sizes) {
+            for (int lines = 1; lines <= (clockLook ? 4 : 3); lines++) {
+                quoteLine.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
+                quoteLine.setMaxLines(lines);
+                quoteLine.measure(w, View.MeasureSpec.UNSPECIFIED);
+                android.text.Layout layout = quoteLine.getLayout();
+                boolean cut = layout != null && layout.getEllipsisCount(layout.getLineCount() - 1) > 0;
+                if (cut) continue;   // more lines may hold it
+                Rect r = new Rect(0, 0, quoteLine.getWidth(), quoteLine.getMeasuredHeight());
+                root.offsetDescendantRectToMyCoords(quoteLine, r);
+                if (r.bottom <= limit) {
+                    quoteLine.setVisibility(View.VISIBLE);
+                    return;
+                }
+                break;   // whole, but too tall: a smaller type may fit
             }
-            quoteLine.setMaxLines(lines);
-            quoteLine.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            quoteLine.setVisibility(View.VISIBLE);
-            int w = View.MeasureSpec.makeMeasureSpec(Math.max(quoteLine.getWidth(), 1), View.MeasureSpec.EXACTLY);
-            quoteLine.measure(w, View.MeasureSpec.UNSPECIFIED);
-            Rect r = new Rect(0, 0, quoteLine.getWidth(), quoteLine.getMeasuredHeight());
-            root.offsetDescendantRectToMyCoords(quoteLine, r);
-            // The name's view starts above its letters: compare with where the capitals begin.
-            float capTop = heroTopY + heroName.getBaseline() - heroName.getTextSize() * 0.72f;
-            if (r.bottom + 8 * density <= capTop) return;
         }
+        quoteLine.setVisibility(View.INVISIBLE);
     }
     // ---- optional weather (config.xml weather_city) -------------------------------------------------
 
@@ -2379,6 +2416,190 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         weatherPlace.setText(r.place.isEmpty() ? weatherCity : r.place);
         weatherDetail.setText(getString(R.string.weather_detail, getString(weatherLabel(r.kind)), r.max, r.min));
         weatherBlock.setVisibility(View.VISIBLE);
+    }
+
+    // ---- the big-clock look (config clock_look) ------------------------------------------------------
+
+    private boolean clockLook;
+    /** The big-clock look's glass, shared by the top buttons and the dock band; null without the drawn scene. */
+    private LiquidGlass lookGlass;
+
+    /**
+     * A drawn "liquid glass" pill: a see-through fill, a bright rim and a soft highlight across the top half. No
+     * blur (too costly for these TVs), but over a photo the see-through fill reads as glass.
+     */
+    private Drawable glassBackground() {
+        float radius = 200 * density;
+        GradientDrawable body = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x4DFFFFFF, 0x1AFFFFFF});
+        body.setCornerRadius(radius);
+        body.setStroke(Math.max(2, Math.round(1.5f * density)), 0x99FFFFFF);
+        GradientDrawable shine = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x66FFFFFF, 0x00FFFFFF});
+        shine.setCornerRadius(radius);
+        android.graphics.drawable.LayerDrawable layers = new android.graphics.drawable.LayerDrawable(
+                new Drawable[]{body, shine});
+        int inset = Math.round(3 * density);
+        layers.setLayerInset(1, inset, inset, inset, Math.round(20 * density));
+        return layers;
+    }
+
+    /** "Monday 9 November", the line above the big clock. */
+    private String lookLine() {
+        Locale locale = Locale.getDefault();
+        String pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM");
+        String date = new java.text.SimpleDateFormat(pattern, locale).format(new java.util.Date());
+        if (!date.isEmpty()) date = date.substring(0, 1).toUpperCase(locale) + date.substring(1);
+        return date;
+    }
+
+    /**
+     * The big-clock look, built like a phone lock screen. The LockScreenView draws the photograph, the glass clock and
+     * the mountains in front of it; the date sits above the clock, the weather bottom left and the quote bottom right,
+     * and the round buttons stay top right. The dock is not on screen until Down is pressed. Everything here runs once.
+     */
+    private void setUpClockLook(Config cfg) {
+        LockScreenView lock = findViewById(R.id.scenic);
+        lock.setVisibility(View.VISIBLE);
+        // Liquid glass takes its colours from the picture behind it, which stays put.
+        Bitmap blur = lock.blur();
+        if (blur != null) lookGlass = new LiquidGlass(blur, density);
+        int heightPx = getResources().getDisplayMetrics().heightPixels;
+        int widthPx = getResources().getDisplayMetrics().widthPixels;
+
+        // The clock is drawn by the LockScreenView, behind the mountains: the header's own clock goes.
+        findViewById(R.id.clock).setVisibility(View.GONE);
+        findViewById(R.id.ampm).setVisibility(View.GONE);
+        findViewById(R.id.clockDivider).setVisibility(View.GONE);
+        ((View) findViewById(R.id.date).getParent()).setVisibility(View.GONE);
+
+        // The date, centred over the whole width, just above the clock (which starts at a fixed fraction of the height).
+        View leftBlock = findViewById(R.id.leftBlock);
+        RelativeLayout.LayoutParams llp = (RelativeLayout.LayoutParams) leftBlock.getLayoutParams();
+        llp.removeRule(RelativeLayout.START_OF);
+        llp.removeRule(RelativeLayout.LEFT_OF);
+        llp.setMarginEnd(0);
+        leftBlock.setLayoutParams(llp);
+        greeting.setVisibility(View.VISIBLE);
+        greeting.setAllCaps(false);
+        greeting.setLetterSpacing(0.01f);
+        greeting.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f);
+        greeting.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        greeting.setShadowLayer(8 * density, 0, 2 * density, 0x66000000);
+        greeting.setGravity(Gravity.CENTER_HORIZONTAL);
+        greeting.setPadding(0, Math.round(heightPx * 0.10f), 0, 0);
+        greetingColor = 0xF2FFFFFF;
+        greeting.setTextColor(greetingColor);
+        greeting.setText(lookLine());
+
+        // Two widgets at the bottom, as on a lock screen: the weather on the left, the quote on the right. They are the
+        // existing views, moved into slots that fade out while the dock is up.
+        lookWidgetsView = findViewById(R.id.lookWidgets);
+        lookWidgetsView.setVisibility(View.VISIBLE);
+        ViewGroup weatherSlot = findViewById(R.id.lookWeatherSlot);
+        ViewGroup quoteSlot = findViewById(R.id.lookQuoteSlot);
+        // Over the rocks the thin weather text gets lost: brighter, with a soft shadow, and the place a little heavier.
+        for (TextView t : new TextView[]{weatherTemp, weatherPlace, weatherDetail, weatherHint}) {
+            if (t == null) continue;
+            t.setTextColor(0xF2FFFFFF);
+            t.setShadowLayer(9 * density, 0, 2 * density, 0xCC000000);
+        }
+        if (weatherPlace != null) weatherPlace.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        if (weatherDetail != null) weatherDetail.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+        moveInto(weatherSlot, weatherBlock);
+        moveInto(weatherSlot, weatherHint);
+        if (quoteLine != null) {
+            moveInto(quoteSlot, quoteLine);
+            quoteLine.getLayoutParams().width = Math.round(widthPx * 0.34f);
+            quoteLine.setGravity(Gravity.START);
+            quoteLine.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+            quoteLine.setTextColor(0xF2FFFFFF);
+            quoteLine.setShadowLayer(10 * density, 0, 2 * density, 0xCC000000);
+        }
+
+        // The round buttons stay in the top right corner, like a status bar, in glass.
+        View topButtons = findViewById(R.id.topButtons);
+        RelativeLayout.LayoutParams tlp = (RelativeLayout.LayoutParams) topButtons.getLayoutParams();
+        tlp.removeRule(RelativeLayout.ALIGN_BOTTOM);
+        tlp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        tlp.bottomMargin = 0;
+        tlp.topMargin = Math.round(28 * density);
+        topButtons.setLayoutParams(tlp);
+        ViewGroup bar = (ViewGroup) topButtons;
+        for (int i = 0; i < bar.getChildCount(); i++) {
+            View pill = bar.getChildAt(i);
+            Drawable focusedLook = pill.getBackground();
+            android.graphics.drawable.StateListDrawable states = new android.graphics.drawable.StateListDrawable();
+            if (focusedLook != null) states.addState(new int[]{android.R.attr.state_focused}, focusedLook);
+            states.addState(new int[0], lookGlass != null ? new GlassDrawable(lookGlass, pill) : glassBackground());
+            pill.setBackground(states);
+        }
+
+        // The dock stays out of sight until Down is pressed (showDock, called from dispatchKeyEvent).
+        RecyclerView dock = findViewById(R.id.grid);
+        dockWrapper = (View) dock.getParent();
+        dockWrapper.setVisibility(View.INVISIBLE);
+        dockWrapper.setAlpha(0f);
+        dockShown = false;
+    }
+
+    private static void moveInto(ViewGroup slot, View view) {
+        if (view == null) return;
+        ViewGroup parent = (ViewGroup) view.getParent();
+        if (parent != null) parent.removeView(view);
+        slot.addView(view);
+    }
+
+    private boolean dockShown;
+    private View dockWrapper;
+    private View lookWidgetsView;
+
+    /** Brings the dock up from the bottom (Down on the lock-screen look); the bottom widgets fade out meanwhile. */
+    private void showDock() {
+        if (!clockLook || dockShown || dockWrapper == null) return;
+        dockShown = true;
+        dockWrapper.animate().cancel();
+        dockWrapper.setVisibility(View.VISIBLE);
+        if (animations && !reducedMotion) {
+            dockWrapper.setTranslationY(48 * density);
+            dockWrapper.animate().alpha(1f).translationY(0f).setDuration(220).start();
+            lookWidgetsView.animate().alpha(0f).setDuration(160).start();
+        } else {
+            dockWrapper.setAlpha(1f);
+            dockWrapper.setTranslationY(0f);
+            lookWidgetsView.setAlpha(0f);
+        }
+        dockWrapper.post(() -> focusTile(Math.max(0, lastFocused)));
+    }
+
+    /** Puts the dock away again (Up from it, or Back); the focus goes to the top buttons. */
+    private void hideDock() {
+        if (!clockLook || !dockShown || dockWrapper == null) return;
+        dockShown = false;
+        firstTopButton().requestFocus();
+        dockWrapper.animate().cancel();
+        if (animations && !reducedMotion) {
+            dockWrapper.animate().alpha(0f).translationY(48 * density).setDuration(180)
+                    .withEndAction(() -> {
+                        if (!dockShown) dockWrapper.setVisibility(View.INVISIBLE);
+                    }).start();
+            lookWidgetsView.animate().alpha(1f).setDuration(220).start();
+        } else {
+            dockWrapper.setAlpha(0f);
+            dockWrapper.setVisibility(View.INVISIBLE);
+            lookWidgetsView.setAlpha(1f);
+        }
+    }
+
+    /** Back on Home from an app: the dock starts out of sight again, as when Home first opens. */
+    private void resetDock() {
+        if (!clockLook || dockWrapper == null) return;
+        dockShown = false;
+        dockWrapper.animate().cancel();
+        dockWrapper.setAlpha(0f);
+        dockWrapper.setTranslationY(0f);
+        dockWrapper.setVisibility(View.INVISIBLE);
+        lookWidgetsView.setAlpha(1f);
     }
 
     private static int weatherLabel(Weather.Kind kind) {
@@ -2912,6 +3133,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     : getString(R.string.greeting_with_name, getString(res), greetingName));
             greeting.setTextColor(greetingColor);
         }
+        if (clockLook) greeting.setText(lookLine());
         if (shamsi) shamsiDate.setText(Shamsi.today(getResources()));
         if (lunar) lunarDate.setText(Lunar.today(getResources(), lunarOffset));
     }

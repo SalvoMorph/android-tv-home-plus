@@ -165,6 +165,7 @@
     <string name="weather_home_hint">Meteo: scegli la città in Impostazioni launcher</string>
     <string name="weather_hint">Disattiva il meteo per nasconderlo e non usare la rete. Scegli una città dall\'elenco; per un\'altra località imposta weather_city in un tema.</string>
     <string name="weather_city_unset">Non impostata</string>
+    <string name="clock_look_state">Aspetto orologio gigante: %1$s</string>
     <string name="cinematic_state">Home cinematografica: %1$s</string>
     <string name="sky_state">Cielo dinamico: %1$s</string>
     <string name="sky_low">Leggero</string>

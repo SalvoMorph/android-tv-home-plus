@@ -565,6 +565,12 @@
          "launcher_settings_icon": false. -->
     <bool name="launcher_settings_icon">true</bool>
 
+    <!-- The "big clock" look: a huge clock over a drawn dusk landscape and one low row of small icon cards, with the
+         date and weather on one line above the clock. Switch it on in Launcher settings or with "clock_look": true
+         in a theme; it overrides the dock and effect settings it needs (single_row, dock_title, columns,
+         cinematic_home...). -->
+    <bool name="clock_look">false</bool>
+
     <!-- A short motivational line under the clock. "off" (the default), "local" (a list built into the launcher, in the
          TV's language where there is one, no network) or "online" (one English quote a day from ZenQuotes, with its
          credit; the list is shown while it loads and when the network or the answer does not suit). Also a theme key

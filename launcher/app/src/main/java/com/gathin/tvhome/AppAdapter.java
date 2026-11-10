@@ -108,12 +108,18 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     static int tileWidthPx(int innerWidthPx, int columns, float density) {
         int design = Math.round(DESIGN_W_DP * density);
         if (innerWidthPx <= 0 || columns <= 0) return design;
+        // The big-clock look: a small icon with a clear gap, like a dock, whatever the usual minimum size.
+        if (squareTiles) return Math.round(innerWidthPx / (float) columns * 0.80f);
         int cell = innerWidthPx / columns;
         int fit = (int) ((cell - 12 * density) / FOCUS_SCALE);
         return Math.max(Math.round(80 * density), Math.min(design, fit));
     }
 
+    /** The big-clock look (clock_look) uses square tiles with iOS-style corners instead of 16:9 banners. Set in onCreate. */
+    static boolean squareTiles;
+
     static int tileHeightPx(int tileWidthPx) {
+        if (squareTiles) return tileWidthPx;
         return Math.round(tileWidthPx * DESIGN_H_DP / DESIGN_W_DP);
     }
 
@@ -896,6 +902,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /** Corner radius for a tile of this width: 16dp at the design width, proportionally less when smaller. */
     static float cornerRadius(int tileWidthPx, float density) {
+        if (squareTiles) return tileWidthPx * 0.225f;   // the proportion of an iOS app icon's corner
         return 16f * density * Math.min(1f, tileWidthPx / (DESIGN_W_DP * density));
     }
 
