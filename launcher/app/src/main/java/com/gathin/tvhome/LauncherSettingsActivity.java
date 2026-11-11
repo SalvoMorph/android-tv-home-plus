@@ -239,7 +239,9 @@ public final class LauncherSettingsActivity extends Activity {
             choices.edit().putBoolean(Config.WEATHER_ENABLED_KEY, weatherOn).apply();
         }, R.string.weather_hint));
         Row city = pick(titleOf(R.string.weather_city_state),
-                () -> weatherCity.isEmpty() ? getString(R.string.weather_city_unset) : weatherCity,
+                // A city may be stored as "lat,lon,Name": show the name only.
+                () -> weatherCity.isEmpty() ? getString(R.string.weather_city_unset)
+                        : weatherCity.replaceFirst("^\\s*-?[0-9.]+\\s*,\\s*-?[0-9.]+\\s*,\\s*", ""),
                 this::showWeatherPicker, R.string.weather_hint);
         city.enabled = () -> weatherOn;
         weather.add(city);
@@ -358,8 +360,8 @@ public final class LauncherSettingsActivity extends Activity {
         view.setFocusable(true);
         view.setClickable(true);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(64));
-        lp.bottomMargin = dp(8);
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(56));
+        lp.bottomMargin = dp(6);
         view.setLayoutParams(lp);
         TextView title = new TextView(this);
         title.setText(row.title);
@@ -372,7 +374,7 @@ public final class LauncherSettingsActivity extends Activity {
         value.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         value.setSingleLine(true);
         value.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        value.setMaxWidth(dp(380));
+        value.setMaxWidth(dp(300));
         value.setGravity(Gravity.END);
         LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
